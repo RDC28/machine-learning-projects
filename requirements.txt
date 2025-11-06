@@ -1,0 +1,16 @@
+# essentials
+jupyter
+ipykernel
+# data-analysis
+numpy
+pandas
+# visualisation
+matplotlib
+seaborn
+# machine learning
+scikit-learn
+scipy
+
+# extras
+python-dotenv
+faker
