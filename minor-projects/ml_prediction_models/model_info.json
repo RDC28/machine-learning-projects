@@ -57,8 +57,8 @@
     "short_description": "Binary classifier (Pass/Fail) using an SVM with linear kernel. Predicts whether a student will pass based on study hours and attendance.",
     "type": "supervised",
     "subtype": "classification",
-    "model_path": "models/Student_SVM/student_svm_linear.pkl",
-    "scaler_path": "models/Student_SVM/student_scaler.pkl",
+    "model_path": "models/student_SVM/student_svm_linear.pkl",
+    "scaler_path": "models/student_SVM/student_scaler.pkl",
     "accuracy": {
       "metric": "Accuracy",
       "value": 0.91,
@@ -97,8 +97,8 @@
     "short_description": "Binary classifier (Pass/Fail) using an SVM with RBF kernel. Predicts whether a student will pass based on study hours and attendance.",
     "type": "supervised",
     "subtype": "classification",
-    "model_path": "models/Student_SVM/student_svm_rbf.pkl",
-    "scaler_path": "models/Student_SVM/student_scaler.pkl",
+    "model_path": "models/student_SVM/student_svm_rbf.pkl",
+    "scaler_path": "models/student_SVM/student_scaler.pkl",
     "accuracy": {
       "metric": "Accuracy",
       "value": 0.94,
@@ -137,8 +137,8 @@
     "short_description": "Binary classifier (Pass/Fail) using an SVM with polynomial kernel. Predicts whether a student will pass based on study hours and attendance.",
     "type": "supervised",
     "subtype": "classification",
-    "model_path": "models/Student_SVM/student_svm_poly.pkl",
-    "scaler_path": "models/Student_SVM/student_scaler.pkl",
+    "model_path": "models/student_SVM/student_svm_poly.pkl",
+    "scaler_path": "models/student_SVM/student_scaler.pkl",
     "accuracy": {
       "metric": "Accuracy",
       "value": 0.89,
