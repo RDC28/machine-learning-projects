@@ -1,0 +1,120 @@
+{% extends 'layout.html' %}
+{% block title %}Result{% endblock %}
+
+{% block main %}
+<div class="card card-dark p-4">
+  <div class="card-header mb-3">
+    <h4 class="mb-0">{{ model.display_name }}</h4>
+    <small class="muted">{{ model.short_description }}</small>
+  </div>
+
+  {% if error %}
+    <div class="alert alert-danger">Error: {{ error }}</div>
+    <div class="d-flex justify-content-end">
+      <a href="{{ request.referrer or url_for('model_predict', model_key=model.key) }}" class="btn btn-outline-light">Try again</a>
+    </div>
+
+  {% else %}
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <div class="mb-3">
+          <h5 class="mb-1">Prediction</h5>
+
+          <div class="display-6 fw-bold">
+            {% if model.round is defined and model.round is not none %}
+              {{ ('%%.%df' % model.round) % result }}{% if model.output_unit %}{{ model.output_unit }}{% endif %}
+            {% else %}
+              {{ result }}{% if model.output_unit %}{{ model.output_unit }}{% endif %}
+            {% endif %}
+          </div>
+
+          {# show mapped label if available (dynamic) #}
+          {% if display_label %}
+            <div class="mt-2">
+              <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text); padding:8px 12px; border-radius:10px;">
+                {{ display_label }}
+              </span>
+            </div>
+          {% endif %}
+
+          {% if model.accuracy %}
+            <div class="muted mt-2">
+              <strong>{{ model.accuracy.metric }}:</strong> {{ model.accuracy.value }}{% if model.accuracy.notes %} — {{ model.accuracy.notes }}{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        {% if inputs %}
+          <h6 class="mb-2">Inputs</h6>
+          <ul class="list-group">
+            {% for p in model.parameters %}
+              {% set val = inputs[loop.index0] %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-semibold">{{ p.label }}</div>
+                  <div class="muted small">{{ p.description }}</div>
+                </div>
+                <div class="text-end">
+                  <div class="fw-bold">{{ val }} {% if p.unit %}{{ p.unit }}{% endif %}</div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {# JSON payload box: dynamic for any model that has result_json passed #}
+        <div class="mt-3">
+          <h6 class="mb-2">Result JSON</h6>
+          <pre id="resultJson" style="background: rgba(0,0,0,0.25); padding:12px; border-radius:8px; color:var(--text);">
+{{ result_json | tojson(indent=2) }}
+          </pre>
+
+          <div class="mt-2 d-flex gap-2">
+            <button id="copyJsonBtn" class="btn btn-sm btn-outline-light">Copy JSON</button>
+            <button id="downloadJsonBtn" class="btn btn-sm btn-accent">Download JSON</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <a href="{{ request.referrer or url_for('model_predict', model_key=model.key) }}" class="btn btn-outline-light">Back</a>
+      <a href="/" class="btn btn-accent">Home</a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // copy JSON to clipboard
+  document.getElementById("copyJsonBtn").addEventListener("click", function () {
+    const data = document.getElementById("resultJson").innerText.trim();
+    navigator.clipboard.writeText(data).then(function () {
+      // small visual feedback
+      const btn = document.getElementById("copyJsonBtn");
+      const old = btn.innerText;
+      btn.innerText = "Copied!";
+      setTimeout(() => btn.innerText = old, 1200);
+    }, function (err) {
+      console.error("Copy failed", err);
+    });
+  });
+
+  // download JSON as file
+  document.getElementById("downloadJsonBtn").addEventListener("click", function () {
+    const data = document.getElementById("resultJson").innerText.trim();
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "{{ model.key }}_prediction.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+</script>
+
+{% endblock %}

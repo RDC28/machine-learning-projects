@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block title %}About{% endblock %}
+
+{% block main %}
+<div class="card card-dark p-4">
+  <h4 class="mb-2">About</h4>
+  <p class="muted">This app currently hosts a linear regression model to predict battery drop for e-scooters. It's built to be extensible: add new entries to <code>model_info.json</code> and the UI will auto-generate prediction pages for them.</p>
+
+  <div class="mt-3">
+    <a href="/" class="btn btn-outline-light me-2">Home</a>
+    <a href="{{ url_for('prediction_root') }}" class="btn btn-accent">Predict</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% block title %}Make a prediction{% endblock %}
+
+{% block main %}
+<div class="card card-dark p-4">
+    <div class="card-header mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">{{ model.display_name }}</h4>
+                <small class="muted">{{ model.short_description }}</small>
+            </div>
+            <div>
+                <span class="badge rounded-pill"
+                    style="background:transparent; border:1px solid rgba(255,255,255,0.06);">
+                    {{ model.subtype | default(model.type) | upper() }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <form id="predictForm" action="" method="post" class="row g-3">
+        {% for p in model.parameters %}
+        <div class="col-12 col-md-6">
+            <label for="{{ p.name }}" class="form-label">{{ p.label }}</label>
+            <input type="{{ 'number' if p.type in ['int','float','number'] else 'text' }}" step="any"
+                class="form-control" name="{{ p.name }}" id="{{ p.name }}"
+                placeholder="{{ p.example if p.example is defined else '' }}" required />
+            <div class="form-text">{{ p.description }}</div>
+        </div>
+        {% endfor %}
+
+        <div class="col-12 d-flex justify-content-between mt-3">
+
+            <!-- NEW BUTTON -->
+            <button type="button" id="defaultBtn" class="btn btn-outline-light">
+                Predict with defaults
+            </button>
+
+            <div>
+                <a href="/" class="btn btn-outline-light me-2">Back</a>
+                <button type="submit" class="btn btn-accent">Get prediction</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- JS to auto-fill + submit -->
+<script>
+    document.getElementById("defaultBtn").addEventListener("click", function () {
+        const defaults = {
+        {% for p in model.parameters %}
+        "{{ p.name }}": "{{ p.example if p.example else '' }}",
+            {% endfor %}
+    };
+
+    // fill inputs
+    for (const key in defaults) {
+        const el = document.getElementById(key);
+        if (el && defaults[key] !== "") {
+            el.value = defaults[key];
+        }
+    }
+
+    // auto-submit
+    document.getElementById("predictForm").submit();
+});
+</script>
+{% endblock %}
