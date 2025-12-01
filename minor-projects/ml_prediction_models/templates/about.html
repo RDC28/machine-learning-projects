@@ -3,12 +3,75 @@
 
 {% block main %}
 <div class="card card-dark p-4">
-  <h4 class="mb-2">About</h4>
-  <p class="muted">This app currently hosts a linear regression model to predict battery drop for e-scooters. It's built to be extensible: add new entries to <code>model_info.json</code> and the UI will auto-generate prediction pages for them.</p>
 
-  <div class="mt-3">
-    <a href="/" class="btn btn-outline-light me-2">Home</a>
-    <a href="{{ url_for('prediction_root') }}" class="btn btn-accent">Predict</a>
+  <h4 class="mb-2">About This Project</h4>
+
+  <p class="muted">
+    This platform is a lightweight ML hub where different machine-learning models live under one clean interface.
+    Every model — whether it’s regression, classification, or something you add later — is fully driven by a single
+    <code>model_info.json</code> file. No extra routes, no extra HTML. You just plug in a model, describe it once,
+    and the UI builds itself automatically.
+  </p>
+
+  <p class="muted mt-2">
+    Right now, the project includes models like a linear regression predictor for e-scooter battery usage and a set
+    of SVM classifiers that determine whether a student will pass or fail based on study patterns. As more models get
+    added, the app adapts instantly — generating the right forms, handling scaling, mapping outputs, and even producing
+    clean JSON responses for downstream use.
+  </p>
+
+  <h5 class="mt-4">What This Platform Handles</h5>
+  <ul class="muted">
+    <li>🧠 Auto-generated prediction forms based on model metadata</li>
+    <li>📦 Shared scaler & model loading with dynamic routing</li>
+    <li>🔍 Smart output mapping (e.g., <code>1 → Pass</code>, <code>0 → Fail</code>)</li>
+    <li>📊 Auto-grouped model categories for clean navigation</li>
+    <li>📄 One-click copy & download for JSON model results</li>
+    <li>🚀 Zero manual UI edits when adding new models</li>
+  </ul>
+
+  <h5 class="mt-4">Links</h5>
+  <ul class="muted">
+    <li>
+      <strong>GitHub Repo:</strong>
+      <a href="https://github.com/RDC28/machine-learning-projects/tree/main/minor-projects/ml_prediction_models"
+         target="_blank"
+         class="text-decoration-none text-light">
+         github.com/RDC28/ml_prediction_models
+      </a>
+    </li>
+
+    <li>
+      <strong>GitHub Account:</strong>
+      <a href="https://github.com/RDC28"
+         target="_blank"
+         class="text-decoration-none text-light">
+         github.com/RDC28
+      </a>
+    </li>
+
+    <li>
+      <strong>LinkedIn:</strong>
+      <a href="https://linkedin.com/in/rchavda28"
+         target="_blank"
+         class="text-decoration-none text-light">
+         linkedin.com/in/rchavda28
+      </a>
+    </li>
+
+    <li>
+      <strong>Email:</strong>
+      <a href="mailto:rchavda2005@outlook.com"
+         class="text-decoration-none text-light">
+         rchavda2005@outlook.com
+      </a>
+    </li>
+  </ul>
+
+  <div class="mt-4 d-flex gap-2">
+    <a href="/" class="btn btn-outline-light">Home</a>
+    <a href="{{ url_for('prediction_root') }}" class="btn btn-accent">Try a Prediction</a>
   </div>
+
 </div>
 {% endblock %}
