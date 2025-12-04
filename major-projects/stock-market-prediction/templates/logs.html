@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+{% set title = "Model Statistics" %}
+{% set active = "logs" %}
+
+{% block content %}
+
+<section class="center-box d-flex justify-content-center align-items-center">
+    <div class="text-center">
+        <h1 class="mb-2" style="font-size: 1.4rem; letter-spacing: 0.08em; text-transform: uppercase;">
+            Model Statistics
+        </h1>
+        <p class="small-muted mb-0">
+            Performance of your last 10 logged predictions.
+        </p>
+    </div>
+</section>
+
+<section class="pb-5">
+    <div class="container">
+
+        <!-- Metrics row -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-3">
+                <div class="stock-card">
+                    <div class="small-muted">Total Logged</div>
+                    <div class="stock-price mt-2">
+                        {{ stats.total_logged or 0 }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="stock-card">
+                    <div class="small-muted">Evaluated Predictions</div>
+                    <div class="stock-price mt-2">
+                        {{ stats.total_evaluated or 0 }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="stock-card">
+                    <div class="small-muted">Avg % Error</div>
+                    <div class="stock-price mt-2">
+                        {% if stats.total_evaluated %}
+                            {{ stats.avg_pct_error | round(2) }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="stock-card">
+                    <div class="small-muted">Direction Accuracy</div>
+                    <div class="stock-price mt-2">
+                        {% if stats.total_evaluated %}
+                            {{ stats.direction_accuracy | round(1) }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log table -->
+        <div class="stock-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="section-title mb-0" style="font-size: 0.9rem;">
+                    Latest 10 Logged Predictions
+                </h2>
+                <span class="small-muted">
+                    Status updates when the next day's close becomes available.
+                </span>
+            </div>
+
+            {% if logs and logs|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-dark table-borderless align-middle mb-0" style="background-color:#181818;">
+                    <thead>
+                        <tr class="small-muted">
+                            <th scope="col">Ticker</th>
+                            <th scope="col">Predicted For</th>
+                            <th scope="col">Last Close</th>
+                            <th scope="col">Predicted Close</th>
+                            <th scope="col">Actual Close</th>
+                            <th scope="col">% Error</th>
+                            <th scope="col">Direction</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in logs %}
+                        <tr>
+                            <td>{{ entry.ticker }}</td>
+                            <td>{{ entry.predicted_for_date }}</td>
+                            <td>{{ entry.last_close | round(2) }}</td>
+                            <td>{{ entry.predicted_close | round(2) }}</td>
+                            <td>
+                                {% if entry.actual_close is not none %}
+                                    {{ entry.actual_close | round(2) }}
+                                {% else %}
+                                    <span class="small-muted">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if entry.pct_error is not none %}
+                                    {{ entry.pct_error | round(2) }}%
+                                {% else %}
+                                    <span class="small-muted">–</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if entry.direction_correct is none %}
+                                    <span class="small-muted">–</span>
+                                {% elif entry.direction_correct %}
+                                    <span style="color:#00e676;">Correct</span>
+                                {% else %}
+                                    <span style="color:#ff5252;">Wrong</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if entry.status == 'evaluated' %}
+                                    <span class="trend-pill trend-bullish">Evaluated</span>
+                                {% else %}
+                                    <span class="trend-pill trend-neutral">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="small-muted mb-0">
+                No logs yet. Run a prediction on the <a href="{{ url_for('predict') }}" style="color:#dba400;">Predict</a> page and save it to the log.
+            </p>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{
+  "last_updated": "2025-12-04",
+  "stocks": [
+    {
+      "ticker": "TSLA",
+      "last_close": 448.09,
+      "predicted_next_close": 446.06,
+      "change_pct": -0.45,
+      "change_abs": -2.03,
+      "direction": "down",
+      "trend_label": "neutral"
+    },
+    {
+      "ticker": "AAPL",
+      "last_close": 280.52,
+      "predicted_next_close": 279.67,
+      "change_pct": -0.31,
+      "change_abs": -0.86,
+      "direction": "down",
+      "trend_label": "neutral"
+    },
+    {
+      "ticker": "GOOGL",
+      "last_close": 316.24,
+      "predicted_next_close": 315.82,
+      "change_pct": -0.13,
+      "change_abs": -0.42,
+      "direction": "down",
+      "trend_label": "neutral"
+    },
+    {
+      "ticker": "MSFT",
+      "last_close": 477.85,
+      "predicted_next_close": 478.21,
+      "change_pct": 0.08,
+      "change_abs": 0.36,
+      "direction": "up",
+      "trend_label": "neutral"
+    },
+    {
+      "ticker": "AMZN",
+      "last_close": 228.05,
+      "predicted_next_close": 227.97,
+      "change_pct": -0.03,
+      "change_abs": -0.08,
+      "direction": "down",
+      "trend_label": "bearish"
+    }
+  ]
+}
