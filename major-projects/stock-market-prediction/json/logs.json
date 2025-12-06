@@ -97,6 +97,62 @@
       "abs_error": null,
       "pct_error": null,
       "direction_correct": null
+    },
+    {
+      "id": 8,
+      "ticker": "HDFCBANK.NS",
+      "period": "6mo",
+      "created_at_iso": "2025-12-06T16:30:44.820241+05:30",
+      "predicted_for_date": "2025-12-07",
+      "last_close": 1003.2999877929688,
+      "predicted_close": 1001.310271302115,
+      "status": "pending",
+      "actual_close": null,
+      "abs_error": null,
+      "pct_error": null,
+      "direction_correct": null
+    },
+    {
+      "id": 9,
+      "ticker": "TATASTEEL.NS",
+      "period": "6mo",
+      "created_at_iso": "2025-12-06T16:31:07.100302+05:30",
+      "predicted_for_date": "2025-12-07",
+      "last_close": 167.11000061035156,
+      "predicted_close": 166.95394706448764,
+      "status": "pending",
+      "actual_close": null,
+      "abs_error": null,
+      "pct_error": null,
+      "direction_correct": null
+    },
+    {
+      "id": 10,
+      "ticker": "GOOGL",
+      "period": "6mo",
+      "created_at_iso": "2025-12-06T16:31:24.804977+05:30",
+      "predicted_for_date": "2025-12-07",
+      "last_close": 321.2699890136719,
+      "predicted_close": 320.1120522628017,
+      "status": "pending",
+      "actual_close": null,
+      "abs_error": null,
+      "pct_error": null,
+      "direction_correct": null
+    },
+    {
+      "id": 11,
+      "ticker": "SBIN.BO",
+      "period": "6mo",
+      "created_at_iso": "2025-12-06T16:32:01.735634+05:30",
+      "predicted_for_date": "2025-12-07",
+      "last_close": 971.4000244140625,
+      "predicted_close": 969.18405546771,
+      "status": "pending",
+      "actual_close": null,
+      "abs_error": null,
+      "pct_error": null,
+      "direction_correct": null
     }
   ]
 }
