@@ -209,8 +209,8 @@ def add_log_entry(ticker, period, insights):
     }
 
     logs.append(entry)
-    # keep only last 10
-    logs = logs[-10:]
+    # keep only last 100
+    logs = logs[-100:]
     save_logs(logs)
     recompute_logs_stats(logs)
     return entry

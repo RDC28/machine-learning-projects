@@ -1,8 +1,157 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %}  
 {% set title = "Predict Stock Price" %}
 {% set active = "predict" %}
 
 {% block content %}
+
+<style>
+    /* --- Glassy cards (same vibe as stats page, slightly brighter) --- */
+    .glass-card {
+        background: radial-gradient(circle at top left, #1f1f1f, #141414 60%);
+        border-radius: 1rem;
+        padding: 1.3rem 1.4rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow:
+            inset 0 0 0.5px rgba(255, 255, 255, 0.16),
+            0 14px 40px rgba(0, 0, 0, 0.75),
+            0 0 25px rgba(219, 164, 0, 0.06);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .glass-card:hover {
+        border-color: #dba400;
+        box-shadow:
+            inset 0 0 0.5px rgba(255, 255, 255, 0.25),
+            0 18px 46px rgba(0, 0, 0, 0.85),
+            0 0 32px rgba(219, 164, 0, 0.16);
+        transform: translateY(-2px);
+    }
+
+    /* --- Form controls --- */
+    .predict-form-control,
+    .predict-form-select {
+        background-color: #181818;
+        border-color: #444;
+        color: #ffffff;
+        border-radius: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .predict-form-control::placeholder {
+        color: #777;
+    }
+
+    .predict-form-control:focus,
+    .predict-form-select:focus {
+        border-color: #dba400;
+        box-shadow: 0 0 0 0.15rem rgba(219, 164, 0, 0.25);
+        background-color: #181818;
+        color: #ffffff;
+    }
+
+    .predict-form-control:hover,
+    .predict-form-select:hover {
+        border-color: #dba400;
+    }
+
+    /* --- Buttons --- */
+    .btn-gold-pill {
+        background-color: #dba400;
+        border-color: #dba400;
+        color: #181818;
+        font-weight: 600;
+        border-radius: 999px;
+    }
+
+    .btn-gold-pill:hover {
+        border-color: #f5c845;
+        background-color: #f5c845;
+        color: #181818;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    }
+
+    .btn-outline-gold-pill {
+        background-color: #181818;
+        border-color: #dba400;
+        color: #dba400;
+        font-weight: 600;
+        border-radius: 999px;
+    }
+
+    .btn-outline-gold-pill:hover {
+        background-color: #231a07;
+        border-color: #f5c845;
+        color: #f5c845;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    }
+
+    .btn-outline-gold-pill.disabled-btn,
+    .btn-outline-gold-pill:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        box-shadow: none;
+        border-color: #555;
+        color: #777;
+        background-color: #151515;
+    }
+
+    .nav-pill-group .btn {
+        font-size: 0.8rem;
+        border-radius: 999px;
+        padding-inline: 1.1rem;
+    }
+
+    /* --- Instruction list --- */
+    .ticker-guidelines-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #9e9e9e;
+        margin-bottom: 0.4rem;
+    }
+
+    .ticker-guidelines-list {
+        font-size: 0.8rem;
+        color: #c7c7c7;
+        padding-left: 1.1rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .ticker-guidelines-list li + li {
+        margin-top: 0.15rem;
+    }
+
+    .ticker-example-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-right: 0.25rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .ticker-example-pill code {
+        font-size: 0.75rem;
+        color: #f5f5f5;
+    }
+
+    .ticker-doc-link {
+        font-size: 0.78rem;
+    }
+
+    .ticker-doc-link a {
+        color: #dba400;
+        text-decoration: none;
+    }
+
+    .ticker-doc-link a:hover {
+        text-decoration: underline;
+    }
+</style>
 
 <!-- HERO / TITLE -->
 <section class="center-box d-flex justify-content-center align-items-center">
@@ -19,27 +168,25 @@
 <!-- FORM + RESULT -->
 <section class="pb-5">
     <div class="container">
-        <!-- Form -->
+        <!-- Form + Ticker Instructions -->
         <div class="row justify-content-center mb-4">
-            <div class="col-12 col-md-8 col-lg-6">
-                <form method="POST" class="p-3 p-md-4 stock-card">
+            <div class="col-12 col-lg-7 mb-3 mb-lg-0">
+                <form method="POST" class="glass-card">
                     <div class="mb-3">
                         <label for="ticker" class="form-label small-muted">Ticker Symbol</label>
                         <input type="text"
-                               class="form-control"
+                               class="form-control predict-form-control"
                                id="ticker"
                                name="ticker"
                                placeholder="e.g. AAPL, MSFT, TSLA, RELIANCE.NS"
-                               value="{{ ticker or '' }}"
-                               style="background-color:#181818; border-color:#444; color:#fff;">
+                               value="{{ ticker or '' }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="period" class="form-label small-muted">Recent History Period</label>
-                        <select class="form-select"
+                        <select class="form-select predict-form-select"
                                 id="period"
-                                name="period"
-                                style="background-color:#181818; border-color:#444; color:#fff;">
+                                name="period">
                             {% set options = {
                                 '1mo': 'Last 1 month',
                                 '3mo': 'Last 3 months',
@@ -59,8 +206,7 @@
                         <button type="submit"
                                 name="action"
                                 value="run"
-                                class="btn px-4"
-                                style="background-color:#dba400; border-color:#dba400; color:#181818; font-weight:600; border-radius:999px;">
+                                class="btn btn-gold-pill px-4">
                             Run Prediction
                         </button>
                     </div>
@@ -70,13 +216,53 @@
                     {% endif %}
                 </form>
             </div>
+
+            <!-- Instructions card -->
+            <div class="col-12 col-lg-5">
+                <div class="glass-card h-100">
+                    <div class="ticker-guidelines-title">
+                        How to enter ticker symbols
+                    </div>
+
+                    <ul class="ticker-guidelines-list">
+                        <li>US stocks: plain ticker, e.g. <code>AAPL</code>, <code>MSFT</code>, <code>TSLA</code>.</li>
+                        <li>Indian NSE stocks: append <code>.NS</code>, e.g. <code>RELIANCE.NS</code>, <code>TATASTEEL.NS</code>.</li>
+                        <li>Indian BSE stocks: append <code>.BO</code>, e.g. <code>SBIN.BO</code>.</li>
+                        <li>ETFs / indices often use their Yahoo Finance symbol (e.g. <code>QQQ</code>, <code>NIFTYBEES.NS</code>).</li>
+                        <li>Make sure there are no spaces: use <code>INFY.NS</code>, not <code>INFY .NS</code>.</li>
+                    </ul>
+
+                    <div class="mb-2">
+                        <span class="ticker-example-pill">
+                            <span class="small-muted">US</span>
+                            <code>AAPL</code>
+                        </span>
+                        <span class="ticker-example-pill">
+                            <span class="small-muted">NSE</span>
+                            <code>RELIANCE.NS</code>
+                        </span>
+                        <span class="ticker-example-pill">
+                            <span class="small-muted">BSE</span>
+                            <code>SBIN.BO</code>
+                        </span>
+                    </div>
+
+                    <p class="ticker-doc-link small-muted mb-0">
+                        Tickers are resolved using Yahoo Finance symbols via <code>yfinance</code>.
+                        You can look up valid symbols and suffixes in the
+                        <a href="https://ranaroussi.github.io/yfinance/" target="_blank" rel="noopener">
+                            yfinance documentation
+                        </a>.
+                    </p>
+                </div>
+            </div>
         </div>
 
         <!-- Prediction Result -->
         {% if insights %}
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
-                <div class="stock-card d-flex flex-column">
+                <div class="glass-card d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
                             <div class="stock-ticker">{{ insights.ticker }}</div>
@@ -166,17 +352,26 @@
                     {% endif %}
                 </div>
 
-                <!-- Log this prediction button -->
+                <!-- Log this prediction button + post-log actions -->
                 <form method="POST" class="mt-3 text-end">
                     <input type="hidden" name="ticker" value="{{ insights.ticker }}">
                     <input type="hidden" name="period" value="{{ selected_period }}">
+
                     <button type="submit"
                             name="action"
                             value="log"
-                            class="btn px-4"
-                            style="background-color:#181818; border-color:#dba400; color:#dba400; font-weight:600; border-radius:999px;">
+                            class="btn btn-outline-gold-pill px-4 save-log-btn {% if log_message %}disabled-btn{% endif %}"
+                            {% if log_message %}disabled aria-disabled="true"{% endif %}>
                         Save this prediction to logs
                     </button>
+
+                    {% if log_message %}
+                    <div class="mt-3 nav-pill-group d-flex flex-wrap gap-2 justify-content-end">
+                        <a href="/" class="btn btn-outline-gold-pill">Home</a>
+                        <a href="/logs" class="btn btn-outline-gold-pill">View Logs</a>
+                        <a href="/predict" class="btn btn-gold-pill">Predict Again</a>
+                    </div>
+                    {% endif %}
                 </form>
             </div>
         </div>

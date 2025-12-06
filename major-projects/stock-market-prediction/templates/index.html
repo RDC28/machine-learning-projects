@@ -4,20 +4,18 @@
 
 {% block content %}
 
-<!-- HERO / CLOCK -->
 <section class="center-box d-flex justify-content-center align-items-center">
     <div class="text-center">
-        <div class="mb-3 small-muted">Current Time (IST)</div>
-        <div id="clock">00:00:00</div>
-        <div id="date">Loading…</div>
+        <div class="mb-2 small-muted text-uppercase tracking-wide">Current Time (IST)</div>
+        <div id="clock" class="fw-bold display-4">00:00:00</div>
+        <div id="date" class="mt-1">Loading…</div>
     </div>
 </section>
 
-<!-- TOP 5 STOCK CARDS -->
 <section class="py-4">
     <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="section-title text-uppercase mb-1" style="font-size: 0.9rem;">
+        <div class="text-center mb-5">
+            <h2 class="section-title text-uppercase mb-2" style="font-size: 1.1rem; letter-spacing: 1px;">
                 Tomorrow's Move – Top 5 Stocks
             </h2>
             <p class="mb-0 small-muted">
@@ -26,90 +24,86 @@
         </div>
 
         {% if stock_cards and stock_cards|length > 0 %}
-        <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-4 justify-content-center">
-            {% for stock in stock_cards %}
-            <div class="col d-flex">
-                <div class="stock-card d-flex flex-column justify-content-between">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <div class="stock-ticker">{{ stock.ticker }}</div>
-                            <div class="small-muted">Trend:
-                                <span class="trend-pill
-                                    {% if stock.trend_label == 'bullish' %}trend-bullish
-                                    {% elif stock.trend_label == 'bearish' %}trend-bearish
-                                    {% else %}trend-neutral{% endif %}">
-                                    {{ stock.trend_label | capitalize }}
-                                </span>
+            <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-4 justify-content-center">
+                {% for stock in stock_cards %}
+                <div class="col">
+                    <div class="stock-card d-flex flex-column justify-content-between h-100">
+                        
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="stock-ticker fw-bold">{{ stock.ticker }}</div>
+                                <div class="small-muted mt-1">Trend:
+                                    <span class="trend-pill ms-1
+                                        {%- if stock.trend_label == 'bullish' %} trend-bullish
+                                        {%- elif stock.trend_label == 'bearish' %} trend-bearish
+                                        {%- else %} trend-neutral{% endif -%}">
+                                        {{ stock.trend_label | capitalize }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if stock.direction == 'up' %}
+                                    <span class="direction-badge direction-up">▲ Up</span>
+                                {% elif stock.direction == 'down' %}
+                                    <span class="direction-badge direction-down">▼ Down</span>
+                                {% else %}
+                                    <span class="direction-badge direction-flat">▬ Flat</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <div>
-                            {% if stock.direction == 'up' %}
-                            <span class="direction-badge direction-up">
-                                ▲ Up
-                            </span>
-                            {% elif stock.direction == 'down' %}
-                            <span class="direction-badge direction-down">
-                                ▼ Down
-                            </span>
-                            {% else %}
-                            <span class="direction-badge direction-flat">
-                                ▬ Flat
-                            </span>
-                            {% endif %}
-                        </div>
-                    </div>
 
-                    <div class="mt-2 mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span class="small-muted">Last Close</span>
-                            <span class="stock-price">${{ stock.last_close }}</span>
+                        <div class="mt-2 mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small-muted">Last Close</span>
+                                <span class="stock-price fw-bold">${{ stock.last_close }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="small-muted">Predicted Close</span>
+                                <span class="stock-price fw-bold" style="color: #dba400;">${{ stock.predicted_next_close }}</span>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="small-muted">Predicted Next Close</span>
-                            <span class="stock-price">${{ stock.predicted_next_close }}</span>
-                        </div>
-                    </div>
 
-                    <div class="mt-auto">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="small-muted">Expected Move</span>
-                            <div class="text-end">
-                                <div>
-                                    {% if stock.change_abs >= 0 %}+{% endif %}{{ stock.change_abs }}
-                                    <span class="small-muted">USD</span>
-                                </div>
-                                <div class="small-muted">
-                                    {% if stock.change_pct >= 0 %}+{% endif %}{{ stock.change_pct }}%
+                        <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small-muted">Expected Move</span>
+                                <div class="text-end">
+                                    <div class="fw-bold">
+                                        {% if stock.change_abs >= 0 %}+{% endif %}{{ stock.change_abs }}
+                                        <span class="small-muted fw-normal" style="font-size: 0.75rem;">USD</span>
+                                    </div>
+                                    <div class="small-muted" style="font-size: 0.8rem;">
+                                        {% if stock.change_pct >= 0 %}+{% endif %}{{ stock.change_pct }}%
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
         {% else %}
-        <p class="text-center small-muted">
-            Could not load stock insights right now. Please try refreshing in a bit.
-        </p>
+            <div class="py-5 text-center">
+                <p class="small-muted mb-0">
+                    Could not load stock insights right now. Please try refreshing in a bit.
+                </p>
+            </div>
         {% endif %}
     </div>
 </section>
 
-<!-- PREDICT CTA -->
 <section class="py-5">
     <div class="container text-center">
-        <h3 class="mb-2" style="font-size: 1rem;">
+        <h3 class="mb-3 text-uppercase" style="font-size: 1rem; letter-spacing: 1px;">
             Want to check a specific stock?
         </h3>
-        <p class="mb-3 small-muted">
+        <p class="mb-4 small-muted">
             Use the predictor to get model-based insights on any stock and time range.
         </p>
         <a href="{{ url_for('predict') }}"
-           class="btn px-4 py-2"
-           style="background-color: #dba400; border-color: #dba400; color: #181818; font-weight: 600; border-radius: 999px;">
+           class="btn px-5 py-2 shadow-sm"
+           style="background-color: #dba400; border-color: #dba400; color: #181818; font-weight: 700; border-radius: 50px;">
             Predict a Stock Price
         </a>
     </div>

@@ -8,6 +8,7 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
@@ -15,6 +16,7 @@
             background-size: 200% 200%;
             animation: gradientMove 12s ease infinite;
             color: #fff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
         @keyframes gradientMove {
@@ -23,22 +25,62 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* NAVBAR */
         .navbar {
             background-color: #181818 !important;
             border-bottom: 1px solid rgba(219, 164, 0, 0.3);
         }
 
-        .navbar-brand,
-        .nav-link {
+        .navbar-brand {
             color: #dba400 !important;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: #eaeaea !important;
             font-weight: 500;
+            position: relative;
+            padding-bottom: 0.3rem;
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
         }
 
-        .nav-link:hover {
-            color: #fff !important;
-            transition: 0.2s ease-in-out;
+        .navbar-nav .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: #dba400;
+            transition: width 0.2s ease-in-out;
         }
 
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 100%;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+        .navbar-nav .nav-link.active {
+            color: #dba400 !important;
+        }
+
+        .navbar-toggler {
+            border-color: #dba400;
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(80%);
+        }
+
+        /* LAYOUT HELPERS */
         .center-box {
             min-height: 40vh;
             padding-top: 40px;
@@ -46,14 +88,14 @@
         }
 
         #clock {
-            font-size: 4.5rem;
+            font-size: 4.2rem;
             font-weight: 800;
             color: #dba400;
             text-shadow: 0 0 18px rgba(219, 164, 0, 0.35);
         }
 
         #date {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-top: 10px;
             color: #eeeeee;
             opacity: 0.8;
@@ -62,6 +104,9 @@
         .section-title {
             font-weight: 600;
             letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            color: #e0e0e0;
         }
 
         .stock-card {
@@ -69,7 +114,7 @@
             border: 1px solid rgba(219, 164, 0, 0.4);
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
             padding: 1.2rem 1.3rem;
             width: 100%;
             min-height: 260px;
@@ -79,16 +124,17 @@
             transform: translateY(-4px);
             box-shadow: 0 16px 30px rgba(0, 0, 0, 0.8);
             border-color: #dba400;
+            background: radial-gradient(circle at top left, #2a2a2a, #181818);
         }
 
         .stock-ticker {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             letter-spacing: 0.08em;
         }
 
         .stock-price {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
         }
 
@@ -130,6 +176,32 @@
             font-size: 0.8rem;
             color: #b0b0b0;
         }
+
+        /* FOOTER */
+        footer {
+            background: #181818;
+            border-top: 1px solid rgba(219, 164, 0, 0.3);
+        }
+
+        .footer-title {
+            color: #dba400;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .footer-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .footer-link:hover {
+            color: #dba400;
+        }
     </style>
 </head>
 
@@ -140,7 +212,7 @@
         <div class="container">
             <a class="navbar-brand" href="/">rcStocks - Stock Market Prediction</a>
 
-            <button class="navbar-toggler bg-warning" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -187,39 +259,42 @@
         updateISTClock();
     </script>
 
-    <!-- FOOTER (unchanged) -->
-    <footer class="mt-5 pt-4 pb-4" 
-        style="background: #181818; border-top: 1px solid rgba(219,164,0,0.3);">
+    <footer class="mt-5 pt-4 pb-4">
+    <div class="container text-center">
+        <h5 class="footer-title">
+            rcStocks • Made by @RDC28
+        </h5>
 
-        <div class="container text-center">
-            <h5 style="color:#dba400; font-weight:700; letter-spacing:0.05em;">
-                rcStocks • Made by @RDC28
-            </h5>
+        <div class="d-flex justify-content-center gap-4 mt-3 flex-wrap">
+            <a href="https://github.com/RDC28" 
+               target="_blank" 
+               class="footer-link text-decoration-none">
+                <i class="fab fa-github me-2"></i>GitHub Profile
+            </a>
 
-            <div class="d-flex justify-content-center gap-4 mt-3 flex-wrap">
-                <a href="https://github.com/RDC28"
-                   target="_blank"
-                   style="color:#dba400; text-decoration:none; font-weight:500;">
-                    GitHub Profile
-                </a>
+            <a href="https://github.com/RDC28/machine-learning-projects/tree/main/major-projects/stock-market-prediction" 
+               target="_blank" 
+               class="footer-link text-decoration-none">
+                <i class="fas fa-code me-2"></i>Project Repository
+            </a>
 
-                <a href="https://github.com/RDC28/your-repo-here"
-                   target="_blank"
-                   style="color:#dba400; text-decoration:none; font-weight:500;">
-                    Project Repository
-                </a>
+            <a href="https://www.linkedin.com/in/rchavda28" 
+               target="_blank" 
+               class="footer-link text-decoration-none">
+                <i class="fab fa-linkedin me-2"></i>LinkedIn
+            </a>
 
-                <a href="mailto:yourmail@example.com"
-                   style="color:#dba400; text-decoration:none; font-weight:500;">
-                    Contact / Query Email
-                </a>
-            </div>
-
-            <p class="small-muted mt-3 mb-0" style="opacity:0.8;">
-                © {{ current_year if current_year else "2025" }} rcStocks — All Rights Reserved
-            </p>
+            <a href="mailto:rchavda2005@outlook.com" 
+               class="footer-link text-decoration-none">
+                <i class="fas fa-envelope me-2"></i>Contact / Query
+            </a>
         </div>
-    </footer>
+
+        <p class="small-muted mt-3 mb-0" style="opacity:0.8;">
+            © {{ current_year if current_year else "2025" }} RCSTOCKS — All Rights Reserved
+        </p>
+    </div>
+</footer>
 
 </body>
 

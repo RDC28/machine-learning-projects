@@ -4,13 +4,241 @@
 
 {% block content %}
 
+<style>
+    /* --- Metrics / cards --- */
+    /* --- Brighter, glassy metric cards --- */
+    .metrics-grid .metric-card {
+        background: linear-gradient(145deg, #232323, #1a1a1a);
+        border-radius: 1rem;
+        padding: 1.3rem 1.4rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        /* subtle glossy highlight */
+        box-shadow:
+            inset 0 0 0.5px rgba(255, 255, 255, 0.15),
+            0 10px 30px rgba(0, 0, 0, 0.6),
+            0 0 25px rgba(219, 164, 0, 0.05);
+        /* soft gold glow */
+
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .metrics-grid .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow:
+            inset 0 0 0.5px rgba(255, 255, 255, 0.25),
+            0 14px 35px rgba(0, 0, 0, 0.75),
+            0 0 30px rgba(219, 164, 0, 0.12);
+        /* stronger gold glow */
+        border-color: #dba400;
+    }
+
+
+    .metric-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: #9e9e9e;
+    }
+
+    .metric-main {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-top: 0.35rem;
+        gap: 0.75rem;
+    }
+
+    .metric-value {
+        font-size: 1.35rem;
+        font-weight: 600;
+    }
+
+    .metric-chip {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #bdbdbd;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .metric-subtext {
+        font-size: 0.68rem;
+        color: #777;
+        margin-top: 0.35rem;
+    }
+
+    .metric-progress {
+        position: relative;
+        margin-top: 0.55rem;
+        height: 0.3rem;
+        border-radius: 999px;
+        background: #202020;
+        overflow: hidden;
+    }
+
+    .metric-progress-fill {
+        position: absolute;
+        inset: 0;
+        transform-origin: left;
+    }
+
+    .metric-progress-fill.success {
+        background: linear-gradient(90deg, #00e676, #dba400);
+    }
+
+    .metric-progress-fill.neutral {
+        background: linear-gradient(90deg, #dba400, #ffeb3b);
+    }
+
+    .metric-progress-fill.error {
+        background: linear-gradient(90deg, #ff5252, #dba400);
+    }
+
+    /* --- Card + table container --- */
+    .stock-card {
+        background: #111111;
+        border-radius: 1rem;
+        padding: 1.25rem 1.3rem;
+        border: 1px solid #242424;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .section-title {
+        font-size: 0.9rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    /* --- Table styling --- */
+    .table-logs {
+        background-color: #181818;
+        border-collapse: separate;
+        border-spacing: 0 0.35rem;
+    }
+
+    .table-logs thead th {
+        border: none;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #9e9e9e;
+        padding-top: 0.35rem;
+        padding-bottom: 0.35rem;
+        background: #181818;
+    }
+
+    .table-logs tbody tr {
+        border-radius: 0.6rem;
+        overflow: hidden;
+    }
+
+    .table-logs tbody tr td {
+        border: none;
+        vertical-align: middle;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        font-size: 0.8rem;
+    }
+
+    .table-logs tbody tr:hover {
+        background: radial-gradient(ellipse at left, #1f1a05, #181818);
+    }
+
+    .table-logs tbody tr td:first-child {
+        border-top-left-radius: 0.6rem;
+        border-bottom-left-radius: 0.6rem;
+    }
+
+    .table-logs tbody tr td:last-child {
+        border-top-right-radius: 0.6rem;
+        border-bottom-right-radius: 0.6rem;
+    }
+
+    /* --- Direction pill --- */
+    .direction-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .direction-pill.up {
+        color: #00e676;
+        border-color: rgba(0, 230, 118, 0.5);
+    }
+
+    .direction-pill.down {
+        color: #ff5252;
+        border-color: rgba(255, 82, 82, 0.5);
+    }
+
+    .direction-pill.neutral {
+        color: #bdbdbd;
+    }
+
+    /* --- % Error mini bar --- */
+    .error-cell {
+        min-width: 110px;
+    }
+
+    .error-bar {
+        position: relative;
+        height: 0.26rem;
+        border-radius: 999px;
+        background: #202020;
+        overflow: hidden;
+        margin-top: 0.18rem;
+    }
+
+    .error-bar-fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(90deg, #ff5252, #dba400);
+    }
+
+    .small-pill-legend {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+
+    .legend-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+        display: inline-block;
+    }
+
+    .legend-dot.green {
+        background: #00e676;
+    }
+
+    .legend-dot.red {
+        background: #ff5252;
+    }
+
+    .legend-dot.gold {
+        background: #dba400;
+    }
+</style>
+
 <section class="center-box d-flex justify-content-center align-items-center">
     <div class="text-center">
         <h1 class="mb-2" style="font-size: 1.4rem; letter-spacing: 0.08em; text-transform: uppercase;">
             Model Statistics
         </h1>
         <p class="small-muted mb-0">
-            Performance of your last 10 logged predictions.
+            Performance snapshot of your logged predictions.
         </p>
     </div>
 </section>
@@ -19,123 +247,211 @@
     <div class="container">
 
         <!-- Metrics row -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-4 metrics-grid">
             <div class="col-12 col-md-3">
-                <div class="stock-card">
-                    <div class="small-muted">Total Logged</div>
-                    <div class="stock-price mt-2">
-                        {{ stats.total_logged or 0 }}
+                <div class="metric-card">
+                    <div class="metric-label">Total Logged</div>
+                    <div class="metric-main">
+                        <div class="metric-value">
+                            {{ stats.total_logged or 0 }}
+                        </div>
+                        <span class="metric-chip">
+                            All stored predictions
+                        </span>
+                    </div>
+                    <div class="metric-subtext">
+                        Includes evaluated and pending entries.
                     </div>
                 </div>
             </div>
+
             <div class="col-12 col-md-3">
-                <div class="stock-card">
-                    <div class="small-muted">Evaluated Predictions</div>
-                    <div class="stock-price mt-2">
-                        {{ stats.total_evaluated or 0 }}
+                <div class="metric-card">
+                    <div class="metric-label">Evaluated Predictions</div>
+                    <div class="metric-main">
+                        <div class="metric-value">
+                            {{ stats.total_evaluated or 0 }}
+                        </div>
+                        <span class="metric-chip">
+                            Next-day close available
+                        </span>
                     </div>
+                    <div class="metric-subtext">
+                        Logged predictions with actual close filled in.
+                    </div>
+                    {% if stats.total_logged %}
+                    {% set eval_pct = (stats.total_evaluated / stats.total_logged * 100) | round(1) %}
+                    <div class="metric-progress">
+                        <div class="metric-progress-fill neutral" style="transform: scaleX({{ eval_pct / 100 }})"></div>
+                    </div>
+                    <div class="metric-subtext">
+                        {{ eval_pct }}% of all logs evaluated.
+                    </div>
+                    {% endif %}
                 </div>
             </div>
+
             <div class="col-12 col-md-3">
-                <div class="stock-card">
-                    <div class="small-muted">Avg % Error</div>
-                    <div class="stock-price mt-2">
-                        {% if stats.total_evaluated %}
+                <div class="metric-card">
+                    <div class="metric-label">Avg % Error</div>
+                    <div class="metric-main">
+                        <div class="metric-value">
+                            {% if stats.total_evaluated %}
                             {{ stats.avg_pct_error | round(2) }}%
-                        {% else %}
+                            {% else %}
                             N/A
-                        {% endif %}
+                            {% endif %}
+                        </div>
+                        <span class="metric-chip">
+                            Lower is better
+                        </span>
                     </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-3">
-                <div class="stock-card">
-                    <div class="small-muted">Direction Accuracy</div>
-                    <div class="stock-price mt-2">
-                        {% if stats.total_evaluated %}
-                            {{ stats.direction_accuracy | round(1) }}%
-                        {% else %}
-                            N/A
-                        {% endif %}
+                    <div class="metric-subtext">
+                        Mean absolute percentage error across evaluated logs.
                     </div>
+                    {% if stats.total_evaluated %}
+                    {% set error_pct = stats.avg_pct_error if stats.avg_pct_error > 0 else 0 %}
+                    {% set norm_error = (error_pct if error_pct < 100 else 100) %} <div class="metric-progress">
+                        <div class="metric-progress-fill error" style="transform: scaleX({{ norm_error / 100 }})"></div>
                 </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Log table -->
-        <div class="stock-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="section-title mb-0" style="font-size: 0.9rem;">
+        <div class="col-12 col-md-3">
+            <div class="metric-card">
+                <div class="metric-label">Direction Accuracy</div>
+                <div class="metric-main">
+                    <div class="metric-value">
+                        {% if stats.total_evaluated %}
+                        {{ stats.direction_accuracy | round(1) }}%
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                    <span class="metric-chip">
+                        Up vs. down correctness
+                    </span>
+                </div>
+                <div class="metric-subtext">
+                    How often the model gets the movement direction right.
+                </div>
+                {% if stats.total_evaluated %}
+                {% set acc = (stats.direction_accuracy if stats.direction_accuracy < 100 else 100) %} <div
+                    class="metric-progress">
+                    <div class="metric-progress-fill success" style="transform: scaleX({{ acc / 100 }})"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+
+    <!-- Log table -->
+    <div class="stock-card">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+            <div>
+                <h2 class="section-title mb-1">
                     Latest 10 Logged Predictions
                 </h2>
                 <span class="small-muted">
                     Status updates when the next day's close becomes available.
                 </span>
             </div>
-
-            {% if logs and logs|length > 0 %}
-            <div class="table-responsive">
-                <table class="table table-dark table-borderless align-middle mb-0" style="background-color:#181818;">
-                    <thead>
-                        <tr class="small-muted">
-                            <th scope="col">Ticker</th>
-                            <th scope="col">Predicted For</th>
-                            <th scope="col">Last Close</th>
-                            <th scope="col">Predicted Close</th>
-                            <th scope="col">Actual Close</th>
-                            <th scope="col">% Error</th>
-                            <th scope="col">Direction</th>
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entry in logs %}
-                        <tr>
-                            <td>{{ entry.ticker }}</td>
-                            <td>{{ entry.predicted_for_date }}</td>
-                            <td>{{ entry.last_close | round(2) }}</td>
-                            <td>{{ entry.predicted_close | round(2) }}</td>
-                            <td>
-                                {% if entry.actual_close is not none %}
-                                    {{ entry.actual_close | round(2) }}
-                                {% else %}
-                                    <span class="small-muted">Pending</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if entry.pct_error is not none %}
-                                    {{ entry.pct_error | round(2) }}%
-                                {% else %}
-                                    <span class="small-muted">–</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if entry.direction_correct is none %}
-                                    <span class="small-muted">–</span>
-                                {% elif entry.direction_correct %}
-                                    <span style="color:#00e676;">Correct</span>
-                                {% else %}
-                                    <span style="color:#ff5252;">Wrong</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if entry.status == 'evaluated' %}
-                                    <span class="trend-pill trend-bullish">Evaluated</span>
-                                {% else %}
-                                    <span class="trend-pill trend-neutral">Pending</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="small-pill-legend">
+                <span class="small-muted d-flex align-items-center gap-1">
+                    <span class="legend-dot green"></span> Correct direction
+                </span>
+                <span class="small-muted d-flex align-items-center gap-1">
+                    <span class="legend-dot red"></span> Wrong direction
+                </span>
+                <span class="small-muted d-flex align-items-center gap-1">
+                    <span class="legend-dot gold"></span> Evaluated log
+                </span>
             </div>
-            {% else %}
-            <p class="small-muted mb-0">
-                No logs yet. Run a prediction on the <a href="{{ url_for('predict') }}" style="color:#dba400;">Predict</a> page and save it to the log.
-            </p>
-            {% endif %}
         </div>
+
+        {% if logs and logs|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-dark table-borderless align-middle mb-0 table-logs">
+                <thead>
+                    <tr class="small-muted">
+                        <th scope="col">Ticker</th>
+                        <th scope="col">Predicted For</th>
+                        <th scope="col">Last Close</th>
+                        <th scope="col">Predicted Close</th>
+                        <th scope="col">Actual Close</th>
+                        <th scope="col">% Error</th>
+                        <th scope="col">Direction</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in logs %}
+                    <tr>
+                        <td>
+                            <strong>{{ entry.ticker }}</strong>
+                        </td>
+                        <td class="small-muted">
+                            {{ entry.predicted_for_date }}
+                        </td>
+                        <td>{{ entry.last_close | round(2) }}</td>
+                        <td>{{ entry.predicted_close | round(2) }}</td>
+                        <td>
+                            {% if entry.actual_close is not none %}
+                            {{ entry.actual_close | round(2) }}
+                            {% else %}
+                            <span class="small-muted">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="error-cell">
+                            {% if entry.pct_error is not none %}
+                            <span>{{ entry.pct_error | round(2) }}%</span>
+                            <div class="error-bar">
+                                <div class="error-bar-fill"
+                                    style="width: {{ (entry.pct_error | abs if entry.pct_error is not none else 0) | round(2) }}%;">
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="small-muted">–</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.direction_correct is none %}
+                            <span class="direction-pill neutral">
+                                <span>—</span>
+                                <span class="small-muted">N/A</span>
+                            </span>
+                            {% elif entry.direction_correct %}
+                            <span class="direction-pill up">
+                                <span>▲</span>
+                                <span>Correct</span>
+                            </span>
+                            {% else %}
+                            <span class="direction-pill down">
+                                <span>▼</span>
+                                <span>Wrong</span>
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.status == 'evaluated' %}
+                            <span class="trend-pill trend-bullish">Evaluated</span>
+                            {% else %}
+                            <span class="trend-pill trend-neutral">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="small-muted mb-0">
+            No logs yet. Run a prediction on the
+            <a href="{{ url_for('predict') }}" style="color:#dba400;">Predict</a> page and save it to the log.
+        </p>
+        {% endif %}
+    </div>
 
     </div>
 </section>

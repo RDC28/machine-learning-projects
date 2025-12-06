@@ -1,5 +1,7 @@
 {% extends 'layout.html' %}
-{% block title %}Models{% endblock %}
+{% block title %}
+ML models by RDC28
+{% endblock %}
 
 {% block main %}
 
@@ -11,12 +13,8 @@
     <ul class="nav nav-pills custom-pills mb-4 border-bottom border-secondary" id="modelTabs" role="tablist">
         {% for cat, models in grouped_models.items() %}
         <li class="nav-item me-2" role="presentation">
-            <button class="nav-link text-uppercase fw-bold px-4 {% if loop.first %}active{% endif %}"
-                id="{{ cat }}-tab"
-                data-bs-toggle="pill"
-                data-bs-target="#{{ cat }}-content"
-                type="button"
-                role="tab"
+            <button class="nav-link text-uppercase fw-bold px-4 {% if loop.first %}active{% endif %}" id="{{ cat }}-tab"
+                data-bs-toggle="pill" data-bs-target="#{{ cat }}-content" type="button" role="tab"
                 aria-selected="{{ 'true' if loop.first else 'false' }}">
                 {{ cat }}
             </button>
@@ -27,9 +25,7 @@
     <div class="tab-content pt-3" id="modelTabsContent">
 
         {% for cat, models in grouped_models.items() %}
-        <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
-            id="{{ cat }}-content"
-            role="tabpanel">
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="{{ cat }}-content" role="tabpanel">
 
             <div class="row g-4">
                 {% for m in models %}
@@ -41,7 +37,7 @@
                                 <div class="me-3">
                                     <h5 class="card-title mb-1 fw-bold text-white">{{ m.display_name }}</h5>
                                     <p class="card-text text-description small mb-3">{{ m.short_description }}</p>
-                                    
+
                                     <span class="badge bg-secondary rounded-pill fw-normal">{{ m.subtype }}</span>
                                 </div>
 
@@ -68,58 +64,67 @@
 <style>
     /* 1. THEME COLORS */
     :root {
-        --theme-purple: #6f42c1; /* Matches the purple in your image */
+        --theme-purple: #6f42c1;
+        /* Matches the purple in your image */
         --theme-purple-hover: #59359a;
-        --theme-text-gray: #b0b3b8; /* Much lighter than standard text-muted */
+        --theme-text-gray: #b0b3b8;
+        /* Much lighter than standard text-muted */
     }
 
     /* 2. FIXING THE BLUE TABS */
     .custom-pills .nav-link {
-        color: var(--theme-text-gray); /* Inactive text color */
+        color: var(--theme-text-gray);
+        /* Inactive text color */
         transition: all 0.3s ease;
     }
-    
+
     .custom-pills .nav-link:hover {
         color: white;
-        background-color: rgba(111, 66, 193, 0.2); /* Slight purple tint on hover */
+        background-color: rgba(111, 66, 193, 0.2);
+        /* Slight purple tint on hover */
     }
 
     /* This targets the ACTIVE tab to turn it Purple instead of Blue */
-/* Replace your existing .custom-pills .nav-link.active with this: */
-.custom-pills .nav-link.active {
-    /* Low opacity purple background */
-    background: rgba(111, 66, 193, 0.3) !important; 
-    /* The blur magic */
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    /* A clearer border to define the shape */
-    border: 1px solid rgba(111, 66, 193, 0.8);
-    color: #e0cffc !important; /* Slightly distinct white-purple text */
-    box-shadow: 0 0 10px rgba(111, 66, 193, 0.1);
-}
+    /* Replace your existing .custom-pills .nav-link.active with this: */
+    .custom-pills .nav-link.active {
+        /* Low opacity purple background */
+        background: rgba(111, 66, 193, 0.3) !important;
+        /* The blur magic */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        /* A clearer border to define the shape */
+        border: 1px solid rgba(111, 66, 193, 0.8);
+        color: #e0cffc !important;
+        /* Slightly distinct white-purple text */
+        box-shadow: 0 0 10px rgba(111, 66, 193, 0.1);
+    }
 
     /* 3. FIXING TEXT VISIBILITY */
     /* Custom class for description text to make it readable */
     .text-description {
         color: var(--theme-text-gray) !important;
     }
-    
+
     /* Ensure the main container background is dark enough */
     .card.bg-dark {
-        background-color: #1a1a1a !important; 
+        background-color: #1a1a1a !important;
     }
+
     .card.bg-black {
-        background-color: #0f0f0f !important; /* Inner cards slightly darker */
+        background-color: #0f0f0f !important;
+        /* Inner cards slightly darker */
     }
 
     /* 4. BUTTON STYLING */
     /* Defining a specific purple button class */
     .btn-purple {
-        background-color: #4a148c; /* Darker purple */
+        background-color: #4a148c;
+        /* Darker purple */
         color: white;
         border: 1px solid #6f42c1;
         transition: all 0.2s;
     }
+
     .btn-purple:hover {
         background-color: var(--theme-purple);
         color: white;
@@ -130,9 +135,11 @@
     .model-entry-card {
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s;
     }
+
     .model-entry-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1rem rgba(111, 66, 193, 0.25) !important; /* Purple shadow glow */
+        box-shadow: 0 0.5rem 1rem rgba(111, 66, 193, 0.25) !important;
+        /* Purple shadow glow */
         border-color: var(--theme-purple) !important;
     }
 </style>

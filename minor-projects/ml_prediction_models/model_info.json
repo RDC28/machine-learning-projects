@@ -50,7 +50,6 @@
       }
     ]
   },
-
   "student_svm_linear": {
     "key": "student_svm_linear",
     "display_name": "Student Performance — SVM (Linear)",
@@ -90,7 +89,6 @@
       }
     ]
   },
-
   "student_svm_rbf": {
     "key": "student_svm_rbf",
     "display_name": "Student Performance — SVM (RBF)",
@@ -130,7 +128,6 @@
       }
     ]
   },
-
   "student_svm_poly": {
     "key": "student_svm_poly",
     "display_name": "Student Performance — SVM (Polynomial)",
