@@ -1,6 +1,6 @@
 # 🍽️ Dish Success Prediction – Machine Learning Web App
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-blueviolet)](https://dish-success-predictor.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-blueviolet)](https://resto-dishes-prediction.onrender.com)
 
 Predict whether a new restaurant dish will be **successful**, **average**, or **unsuccessful** *before* adding it to the menu.
 
