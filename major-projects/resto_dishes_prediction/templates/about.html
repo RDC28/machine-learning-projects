@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% block title %}About Project{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+
+        <div class="text-center mb-5">
+            <h1 class="fw-bold display-5">Behind the <span style="background: linear-gradient(45deg, var(--accent-primary), #ff8e53); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Logic</span></h1>
+            <p class="text-muted lead mx-auto" style="max-width: 600px;">
+                Understanding the machine learning architecture powering DishPredict.
+            </p>
+        </div>
+
+        <div class="section-card mb-5">
+            <div class="row align-items-center g-5">
+                <div class="col-md-7">
+                    <h4 class="fw-semibold mb-3">The Problem</h4>
+                    <p class="text-muted">
+                        Restaurants often launch new menu items based on intuition rather than data. This leads to high failure rates and wasted inventory. 
+                        <strong>DishPredict</strong> solves this by analyzing historical data to quantify the likelihood of a dish's success before it hits the kitchen.
+                    </p>
+                    
+                    <h4 class="fw-semibold mb-3 mt-4">The Solution</h4>
+                    <p class="text-muted mb-0">
+                        We use a <strong>Logistic Regression</strong> model trained on specific cuisine datasets. The model evaluates features like:
+                    </p>
+                    <ul class="text-muted mt-2 mb-0">
+                        <li>Spiciness levels & Prep time</li>
+                        <li>Price-to-value ratios</li>
+                        <li>Dietary categorization (Veg/Non-veg)</li>
+                    </ul>
+                </div>
+                <div class="col-md-5 text-center">
+                    <div class="p-4 rounded-circle d-inline-block position-relative" style="background: rgba(255, 107, 107, 0.05); border: 1px dashed var(--accent-primary);">
+                        <i class="bi bi-diagram-3-fill display-1" style="color: var(--accent-primary);"></i>
+                        
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark border border-secondary text-secondary">
+                            Data
+                        </span>
+                        <span class="position-absolute top-100 start-0 translate-middle badge rounded-pill bg-dark border border-secondary text-secondary">
+                            Model
+                        </span>
+                        <span class="position-absolute top-50 start-0 translate-middle badge rounded-pill bg-dark border border-secondary text-secondary">
+                            Prediction
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h5 class="section-title text-center mb-4">Technology Stack</h5>
+            <div class="row g-3 text-center">
+                
+                <div class="col-6 col-md-3">
+                    <div class="section-card py-4 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="bi bi-filetype-py fs-1 mb-3 text-warning"></i>
+                        <h6 class="mb-0">Python</h6>
+                        <small class="text-muted">Backend Logic</small>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="section-card py-4 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="bi bi-bootstrap fs-1 mb-3" style="color: #712cf9;"></i>
+                        <h6 class="mb-0">Bootstrap 5</h6>
+                        <small class="text-muted">UI Framework</small>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="section-card py-4 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="bi bi-box-seam fs-1 mb-3 text-success"></i>
+                        <h6 class="mb-0">Flask</h6>
+                        <small class="text-muted">Web Server</small>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="section-card py-4 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="bi bi-cpu fs-1 mb-3 text-info"></i>
+                        <h6 class="mb-0">Scikit-Learn</h6>
+                        <small class="text-muted">ML Pipeline</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="section-card text-center p-5">
+            <h3 class="fw-bold mb-4">About the Developer</h3>
+            <div class="d-flex justify-content-center mb-4">
+                <div class="rounded-circle d-flex align-items-center justify-content-center fs-2 fw-bold text-white shadow-lg" 
+                     style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-primary), #ff8e53);">
+                    RC
+                </div>
+            </div>
+            <h4 class="mb-1">Rohit Chavda</h4>
+            <p class="text-muted mb-4">Data Science Enthusiast & Web Developer</p>
+            
+            <div class="d-flex justify-content-center gap-3">
+                <a href="https://github.com/RDC28" target="_blank" class="btn btn-outline-light rounded-pill px-4">
+                    <i class="bi bi-github me-2"></i>GitHub
+                </a>
+                <a href="https://linkedin.com/in/rchavda28" target="_blank" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-linkedin me-2"></i>LinkedIn
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+{% block title %}Predict Dish Performance{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Predict <span style="background: linear-gradient(45deg, var(--accent-primary), #ff8e53); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Performance</span></h2>
+            <div class="d-inline-flex align-items-center mt-2 px-3 py-1 rounded-pill" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);">
+                <i class="bi bi-database me-2 text-muted"></i>
+                <span class="text-light small text-uppercase fw-bold">{{ dataset_name }} Model</span>
+            </div>
+        </div>
+
+        <form method="post">
+
+            <div class="section-card mb-4">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+                    <i class="bi bi-tag-fill me-2 fs-5" style="color: var(--accent-primary);"></i>
+                    <h5 class="mb-0 fw-semibold">Dish & Pricing</h5>
+                </div>
+
+                <div class="row g-4">
+                    {% if "course_type" in feature_columns %}
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Course Type</label>
+                        <select name="course_type" class="form-select">
+                            <option>Starter</option>
+                            <option>Main</option>
+                            <option>Dessert</option>
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    {% if "price" in feature_columns %}
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary border-opacity-25 text-muted">$</span>
+                            <input type="number" name="price" class="form-control" required placeholder="0.00">
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if "price_category" in feature_columns %}
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Price Category</label>
+                        <select name="price_category" class="form-select">
+                            <option>budget</option>
+                            <option>mid</option>
+                            <option>premium</option>
+                        </select>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="section-card mb-4">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+                    <i class="bi bi-palette-fill me-2 fs-5" style="color: #6bcdff;"></i>
+                    <h5 class="mb-0 fw-semibold">Flavor Profile</h5>
+                </div>
+
+                <div class="row g-4">
+                    {% for col in feature_columns %}
+                        {% if col.endswith("_level") or col == "flavor_balance_score" %}
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1">
+                                <label class="form-label text-muted small text-uppercase fw-bold">{{ col.replace("_", " ").title() }}</label>
+                                <span class="badge bg-dark border border-secondary text-light" id="{{ col }}_val">3</span>
+                            </div>
+                            <input type="range"
+                                   name="{{ col }}"
+                                   class="form-range"
+                                   min="1"
+                                   max="{{ 10 if col == 'flavor_balance_score' else 5 }}"
+                                   value="3"
+                                   oninput="document.getElementById('{{ col }}_val').innerText = this.value">
+                            <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem;">
+                                <span>Low</span>
+                                <span>High</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="section-card mb-4">
+                <div class="d-flex align-items-center mb-2 border-bottom border-secondary border-opacity-10 pb-3">
+                    <i class="bi bi-stars me-2 fs-5" style="color: #ffd76b;"></i>
+                    <h5 class="mb-0 fw-semibold">Quality & Experience</h5>
+                </div>
+                <p class="text-muted small mb-4 fst-italic">Estimated scores based on similar dishes.</p>
+
+                <div class="row g-4">
+                    {% for col in feature_columns %}
+                        {% if col.endswith("_rating") or col in ["presentation_score", "ingredient_availability_score"] %}
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1">
+                                <label class="form-label text-muted small text-uppercase fw-bold">{{ col.replace("_", " ").title() }}</label>
+                                <span class="badge bg-dark border border-secondary text-light" id="{{ col }}_val">3</span>
+                            </div>
+                            <input type="range"
+                                   name="{{ col }}"
+                                   class="form-range"
+                                   min="1"
+                                   max="5"
+                                   value="3"
+                                   oninput="document.getElementById('{{ col }}_val').innerText = this.value">
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="section-card mb-4">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+                    <i class="bi bi-stopwatch-fill me-2 fs-5" style="color: #fa5252;"></i>
+                    <h5 class="mb-0 fw-semibold">Kitchen Operations</h5>
+                </div>
+
+                <div class="row g-4">
+                    {% if "prep_time_minutes" in feature_columns %}
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Prep Time (mins)</label>
+                        <input type="number" name="prep_time_minutes" class="form-control">
+                    </div>
+                    {% endif %}
+
+                    {% if "cook_time_minutes" in feature_columns %}
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Cook Time (mins)</label>
+                        <input type="number" name="cook_time_minutes" class="form-control">
+                    </div>
+                    {% endif %}
+
+                    {% if "complexity_score" in feature_columns %}
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Recipe Complexity</label>
+                            <span class="badge bg-dark border border-secondary text-light" id="complexity_score_val">3</span>
+                        </div>
+                        <input type="range"
+                               name="complexity_score"
+                               class="form-range"
+                               min="1"
+                               max="5"
+                               value="3"
+                               oninput="document.getElementById('complexity_score_val').innerText = this.value">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="section-card mb-5">
+                <div class="d-flex align-items-center mb-2 border-bottom border-secondary border-opacity-10 pb-3">
+                    <i class="bi bi-graph-up-arrow me-2 fs-5" style="color: #51cf66;"></i>
+                    <h5 class="mb-0 fw-semibold">Expected Customer Response</h5>
+                </div>
+                <p class="text-muted small mb-4 fst-italic">Projections based on historical data.</p>
+
+                <div class="row g-4">
+                    {% if "avg_customer_rating" in feature_columns %}
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Est. Customer Rating</label>
+                            <span class="badge bg-dark border border-secondary text-light" id="avg_customer_rating_val">4</span>
+                        </div>
+                        <input type="range"
+                               name="avg_customer_rating"
+                               class="form-range"
+                               min="1"
+                               max="5"
+                               step="0.1"
+                               value="4"
+                               oninput="document.getElementById('avg_customer_rating_val').innerText = this.value">
+                    </div>
+                    {% endif %}
+
+                    {% if "repeat_order_rate" in feature_columns %}
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Est. Repeat Rate</label>
+                            <span class="badge bg-dark border border-secondary text-light" id="repeat_order_rate_val">0.5</span>
+                        </div>
+                        <input type="range"
+                               name="repeat_order_rate"
+                               class="form-range"
+                               min="0"
+                               max="1"
+                               step="0.05"
+                               value="0.5"
+                               oninput="document.getElementById('repeat_order_rate_val').innerText = this.value">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-grid mb-5">
+                <button type="submit" class="btn btn-primary py-3 fw-bold fs-5 shadow-lg">
+                    <i class="bi bi-magic me-2"></i> Predict Outcome
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

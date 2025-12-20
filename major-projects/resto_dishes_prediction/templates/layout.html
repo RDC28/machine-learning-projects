@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Dish Success Predictor{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --bg-body: #0f1115;
+            --bg-surface: #181a20;
+            --bg-surface-hover: #1f222b;
+            --accent-primary: #ff6b6b; /* Vibrant Coral */
+            --accent-hover: #ff8787;
+            --text-main: #f5f5f7;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---------- Navbar (Glassmorphism) ---------- */
+        .navbar {
+            background: rgba(15, 17, 21, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            font-size: 1.5rem;
+        }
+
+        .brand-accent {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            margin: 0 0.5rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-main) !important;
+        }
+
+        .btn-nav-action {
+            background-color: rgba(255, 107, 107, 0.1);
+            color: var(--accent-primary);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .btn-nav-action:hover {
+            background-color: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* ---------- Main Layout ---------- */
+        main {
+            flex: 1; /* Pushes footer down */
+            padding-top: 5rem; /* Offset for fixed navbar if needed, or just visual breathing room */
+        }
+
+        /* ---------- Cards & Sections ---------- */
+        .section-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-card:hover {
+            border-color: rgba(255, 107, 107, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ---------- Inputs ---------- */
+        .form-control, .form-select {
+            background-color: #0f1115;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #0f1115;
+            border-color: var(--accent-primary);
+            color: var(--text-main);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.15);
+        }
+
+        /* ---------- Buttons ---------- */
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            background-color: var(--bg-surface);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            padding: 3rem 0;
+            font-size: 0.9rem;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-primary);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 1rem 0;
+            opacity: 0.5;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                Dish<span class="brand-accent">Predict</span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a href="/custom_data" class="btn btn-nav-action d-block text-center">
+                            <i class="bi bi-magic me-1"></i> Predict
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-8">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show border-0 shadow-sm" style="background-color: {{ '#3c1818' if category == 'error' else '#183c2a' }}; color: #fff;" role="alert">
+                                {% if category == 'error' %}
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                {% else %}
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                {% endif %}
+                                {{ message }}
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">Made by RDC28</h6>
+                    
+                    <div class="d-flex flex-wrap justify-content-center gap-3 gap-md-4">
+                        <a href="https://github.com/RDC28" target="_blank" class="footer-link">
+                            <i class="bi bi-github"></i> RDC28
+                        </a>
+                        <a href="https://linkedin.com/in/rchavda28" target="_blank" class="footer-link">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="mailto:rchavda2005@outlook.com" class="footer-link">
+                            <i class="bi bi-envelope-fill"></i> Email
+                        </a>
+                    </div>
+
+                    <div class="mt-3">
+                        <a href="https://github.com/RDC28/machine-learning-projects/tree/main/major-projects/resto_dishes_prediction" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3" style="border-color: var(--border-color); color: var(--text-muted);">
+                            <i class="bi bi-git me-1"></i> View Project Repo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider mx-auto" style="max-width: 200px;"></div>
+
+            <p class="mb-0 text-muted" style="font-size: 0.8rem;">
+                Built with <i class="bi bi-heart-fill text-danger mx-1" style="font-size: 0.7rem;"></i> using 
+                <span class="text-white">Flask</span>, 
+                <span class="text-white">Bootstrap 5</span> & 
+                <span class="text-white">Logistic Regression</span>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+</html>
