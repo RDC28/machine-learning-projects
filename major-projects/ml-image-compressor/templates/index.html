@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% set title = "Home | K-Means Image Compression" %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="text-center mb-5">
+    <h1 class="mb-3" style="letter-spacing: 0.12em; text-transform: uppercase;">
+        Image Compression using <span class="highlight">K-Means</span>
+    </h1>
+    <p class="muted mx-auto" style="max-width: 720px;">
+        This project uses <b>unsupervised learning</b> to reduce the number of colors in an image.
+        Each pixel is clustered in RGB space and replaced with its nearest representative color —
+        resulting in smaller file sizes with controlled quality loss.
+    </p>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card-dark p-4 h-100">
+            <h6 class="mb-2">1. Pixel Representation</h6>
+            <p class="muted mb-0">
+                Each pixel is treated as a point in 3D RGB space: (R, G, B).
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-dark p-4 h-100">
+            <h6 class="mb-2">2. K-Means Clustering</h6>
+            <p class="muted mb-0">
+                K-Means groups similar colors into K clusters using Euclidean distance.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-dark p-4 h-100">
+            <h6 class="mb-2">3. Image Reconstruction</h6>
+            <p class="muted mb-0">
+                Each pixel is replaced with its cluster centroid, reducing total colors.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- DEMO SECTION -->
+<section class="mb-4">
+    <h4 class="mb-3">Compression Examples</h4>
+    <p class="muted mb-4">
+        Same image compressed using different values of <b>K</b>.
+        Lower K means fewer colors and higher compression.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card-dark p-3 text-center">
+                <img src="{{ url_for('static', filename='demo/k4.jpg') }}"
+                     class="img-fluid rounded mb-3"
+                     alt="K=4 Compression">
+                <h6 class="mb-1">K = 4</h6>
+                <p class="muted mb-0">Very high compression, visible color loss</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-dark p-3 text-center">
+                <img src="{{ url_for('static', filename='demo/k8.jpg') }}"
+                     class="img-fluid rounded mb-3"
+                     alt="K=8 Compression">
+                <h6 class="mb-1">K = 8</h6>
+                <p class="muted mb-0">Balanced compression and quality</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-dark p-3 text-center">
+                <img src="{{ url_for('static', filename='demo/k16.jpg') }}"
+                     class="img-fluid rounded mb-3"
+                     alt="K=16 Compression">
+                <h6 class="mb-1">K = 16</h6>
+                <p class="muted mb-0">Near-original visual quality</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

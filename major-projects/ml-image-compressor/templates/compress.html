@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% set title = "Compress Image | K-Means" %}
+{% set active = "compress" %}
+
+{% block content %}
+
+<!-- HEADER -->
+<section class="text-center mb-5">
+    <h2 style="letter-spacing: 0.12em; text-transform: uppercase;">
+        Compress Image
+    </h2>
+    <p class="muted">
+        Manual control or intelligent auto-compression using
+        <b>unsupervised learning + information theory</b>.
+    </p>
+</section>
+
+<!-- FORM -->
+<section class="card-dark p-4 mb-5">
+    <form method="POST" enctype="multipart/form-data">
+
+        <!-- Image Upload -->
+        <div class="mb-3">
+            <label class="form-label">Select Image</label>
+            <input
+                type="file"
+                class="form-control"
+                name="image"
+                accept=".jpg,.jpeg,.png"
+                required
+            >
+        </div>
+
+        <!-- K Slider -->
+        <div class="mb-3">
+            <label class="form-label">
+                Number of Colors (K): <b id="kValue">{{ k }}</b>
+            </label>
+            <input
+                type="range"
+                class="form-range"
+                name="k"
+                min="2"
+                max="64"
+                step="2"
+                value="{{ k }}"
+                {% if auto_k %}disabled{% endif %}
+                oninput="document.getElementById('kValue').innerText = this.value"
+            >
+        </div>
+
+        <!-- Auto K Toggle -->
+        <div class="form-check mb-4">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="auto_k"
+                id="autoK"
+                {% if auto_k %}checked{% endif %}
+                onchange="
+                    const slider = this.form.querySelector('input[type=range]');
+                    slider.disabled = this.checked;
+                "
+            >
+            <label class="form-check-label" for="autoK">
+                Automatically choose optimal K (entropy-based)
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-warning px-4">
+            Compress Image
+        </button>
+
+    </form>
+</section>
+
+<!-- RESULT -->
+{% if output_image %}
+<section>
+    <h4 class="mb-3">Compressed Result</h4>
+
+    <div class="row g-4 align-items-start">
+        <div class="col-md-7">
+            <div class="card-dark p-3">
+                <img
+                    src="{{ url_for('static', filename=output_image) }}?v={{ stats.compressed_size_kb }}"
+                    class="img-fluid rounded mb-3"
+                    alt="Compressed Image"
+                >
+
+                <!-- DOWNLOAD BUTTON -->
+                <a
+                    href="{{ url_for('static', filename=output_image) }}"
+                    download
+                    class="btn btn-success w-100"
+                >
+                    ⬇️ Save Compressed Image
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card-dark p-4">
+                <h6 class="mb-3">Compression Stats</h6>
+                <ul class="list-unstyled muted mb-0">
+                    <li>K used: <b>{{ stats.k_used }}</b></li>
+                    <li>Mode: <b>{{ "Auto" if stats.auto_k else "Manual" }}</b></li>
+                    <li>Entropy: <b>{{ stats.entropy }}</b></li>
+                    <li>Scale: <b>{{ stats.scale }}</b></li>
+                    {% if stats.jpeg_quality %}
+                        <li>JPEG Quality: <b>{{ stats.jpeg_quality }}</b></li>
+                    {% endif %}
+                    <li>Original size: <b>{{ stats.original_size_kb }} KB</b></li>
+                    <li>Compressed size: <b>{{ stats.compressed_size_kb }} KB</b></li>
+                    <li>Reduction: <b>{{ stats.reduction_percent }}%</b></li>
+                    <li>Encoder: <b>{{ stats.encoder }}</b></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
