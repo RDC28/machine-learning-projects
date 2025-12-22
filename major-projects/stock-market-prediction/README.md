@@ -224,4 +224,4 @@ Predictions are based solely on historical price patterns and **should not be us
 
 **Author:** @RDC28
 **GitHub:** [https://github.com/RDC28](https://github.com/RDC28)
-**Queries:** [yourmail@example.com](mailto:yourmail@example.com)
+**Queries:** [rchavda2005@outlook.com](mailto:rchavda2005@outlook.com)
