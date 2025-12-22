@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% set title = "Home | K-Means Image Compression" %}
+
+{% block content %}
+
+<section class="text-center py-5 mb-4">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="display-4 fw-bold mb-3 text-white">
+            Smart Compression with <span style="color: var(--accent-color);">K-Means</span>
+        </h1>
+        <p class="lead text-secondary mb-4">
+            Reduce image file sizes intelligently using <b>Unsupervised Machine Learning</b>. 
+            We analyze pixel data in RGB space and cluster similar colors to optimize storage without losing the essence of your image.
+        </p>
+        
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/compress" class="btn btn-lg px-5 fw-semibold" 
+               style="background-color: var(--accent-color); color: white; border: none; box-shadow: 0 4px 15px rgba(15, 125, 99, 0.4);">
+               <i class="bi bi-rocket-takeoff me-2"></i>Start Compressing
+            </a>
+            <a href="/about" class="btn btn-lg btn-outline-secondary px-4 fw-semibold">
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="text-center mb-4">
+        <h6 class="text-uppercase text-secondary fw-bold" style="letter-spacing: 2px; font-size: 0.8rem;">The Process</h6>
+        <h3 class="fw-bold">How It Works</h3>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card-dark p-4 h-100 text-center position-relative" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div class="mb-3">
+                    <i class="bi bi-grid-3x3-gap-fill fs-1" style="color: var(--accent-color);"></i>
+                </div>
+                <h5 class="fw-semibold">1. Pixel Mapping</h5>
+                <p class="text-secondary small mb-0">
+                    The image is flattened into a dataset where every pixel is a data point in 3-dimensional RGB space.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-dark p-4 h-100 text-center" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div class="mb-3">
+                    <i class="bi bi-bullseye fs-1" style="color: var(--accent-color);"></i>
+                </div>
+                <h5 class="fw-semibold">2. K-Means Clustering</h5>
+                <p class="text-secondary small mb-0">
+                    The algorithm identifies <b>K</b> distinct color centers (centroids) that best represent the entire image's color palette.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-dark p-4 h-100 text-center" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div class="mb-3">
+                    <i class="bi bi-images fs-1" style="color: var(--accent-color);"></i>
+                </div>
+                <h5 class="fw-semibold">3. Reconstruction</h5>
+                <p class="text-secondary small mb-0">
+                    Every original pixel is replaced by its nearest centroid color, drastically reducing the unique color count.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Live Examples</h3>
+            <p class="text-secondary mb-0">See how different K values affect quality.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card-dark p-3 text-center h-100">
+                <div class="position-relative mb-3">
+                    <img src="{{ url_for('static', filename='demo/k16.jpg') }}" 
+                         class="img-fluid rounded shadow-sm w-100" 
+                         alt="K=16 Compression">
+                    <span class="position-absolute top-0 end-0 m-2 badge bg-dark border border-secondary">K = 16</span>
+                </div>
+                <h6 class="fw-bold mb-1">High Compression</h6>
+                <p class="text-secondary small mb-0">Visible posterization. Good for artistic effects or thumbnails.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-dark p-3 text-center h-100">
+                <div class="position-relative mb-3">
+                    <img src="{{ url_for('static', filename='demo/k32.jpg') }}" 
+                         class="img-fluid rounded shadow-sm w-100" 
+                         alt="K=32 Compression">
+                    <span class="position-absolute top-0 end-0 m-2 badge bg-dark border border-secondary">K = 32</span>
+                </div>
+                <h6 class="fw-bold mb-1 text-white">Balanced</h6>
+                <p class="text-secondary small mb-0">Great trade-off between file size and visual fidelity.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-dark p-3 text-center h-100">
+                <div class="position-relative mb-3">
+                    <img src="{{ url_for('static', filename='demo/k64.jpg') }}" 
+                         class="img-fluid rounded shadow-sm w-100" 
+                         alt="K=64 Compression">
+                    <span class="position-absolute top-0 end-0 m-2 badge bg-dark border border-secondary">K = 64</span>
+                </div>
+                <h6 class="fw-bold mb-1">High Quality</h6>
+                <p class="text-secondary small mb-0">Getting close to the original image.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

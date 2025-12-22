@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% set title = "About | The Technology" %}
+{% set active = "about" %} 
+
+{% block content %}
+
+<style>
+    .text-accent {
+        color: #0f7d63 !important;
+    }
+</style>
+
+<section class="text-center mb-5">
+    <h2 style="letter-spacing: 0.12em; text-transform: uppercase;">
+        The Technology
+    </h2>
+    <p class="text lead" style="color: #0f7d63;">
+        Exploring the intersection of unsupervised machine learning, color theory, and data compression.
+    </p>
+</section>
+
+<section class="card-dark p-4 mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-12">
+            <h3 class="h4 mb-4 border-bottom border-secondary pb-3">
+                <i class="bi bi-palette2 me-2 text-accent"></i> Structural vs. Visual Compression
+            </h3>
+            <p>
+                Traditional image compression (like standard JPEG) works by analyzing frequencies and discarding visual information that the human eye is less sensitive to. It's a trick played on your vision.
+            </p>
+            <p>
+                This tool takes a fundamentally different approach. It doesn't blur details; it restructures the image's data. By analyzing the entire color space of an image, we use <b>Unsupervised Machine Learning</b> to rebuild the image using a drastically restricted, mathematically optimized palette of colors.
+            </p>
+            <p class="mb-0">
+                The result is an image with a significantly smaller file size that retains sharp edges and a distinct, often artistic, aesthetic.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="card-dark p-4 mb-5">
+    <h3 class="h4 mb-4 border-bottom border-secondary pb-3">
+        <i class="bi bi-diagram-3 me-2 text-accent"></i>
+        The Engine: K-Means Clustering
+    </h3>
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                The core of this tool is the <b>K-Means algorithm</b>. It is an algorithm used to find groups (clusters) in unlabelled data.
+            </p>
+            <p>
+                Imagine every pixel in your image is a point plotted in a 3D space (Red axis, Green axis, Blue axis). A colorful photo forms a dense cloud of millions of points.
+            </p>
+            <p class="text" style="color: #0f7d63;">How K-Means works here:</p>
+            <ol class="text list-spaced">
+                <li class="mb-2">You tell the algorithm how many colors you want in the final image (the value of <b>K</b>).</li>
+                <li class="mb-2">The algorithm places <i>K</i> points randomly into that 3D color cloud.</li>
+                <li class="mb-2">It iteratively moves those points until they sit in the exact gravitational center of the densest clusters of colors.</li>
+            </ol>
+            <p class="mt-3 mb-0">
+                The final image is reconstructed by snapping every original pixel to its nearest optimized center color.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="card-dark p-4 mb-5">
+    <h3 class="h4 mb-4 border-bottom border-secondary pb-3">
+        <i class="bi bi-cpu me-2 text-accent"></i>
+        Intelligent Automation (Entropy)
+    </h3>
+    <p>
+        The hardest part of palette reduction is choosing the right number of colors ($K$). Choose too few, and the image looks posterized and banded. Choose too many, and the file size remains large.
+    </p>
+    <p>
+        Our "Auto K" feature utilizes concepts from <b>Information Theory (specifically Shannon Entropy)</b>.
+    </p>
+    <p class="mb-0 text" style="color: #0f7d63;">
+        Before compressing, the system calculates the statistical "entropy" of the original image—essentially measuring how "busy" or complex the information content is. A flat blue sky has low entropy; a dense forest photo has high entropy. We use this score to intelligently map the image to an optimal $K$ value that balances visual fidelity against file size savings, without human guesswork.
+    </p>
+</section>
+
+{% endblock %}
