@@ -1,5 +1,7 @@
 # 🚀 rcStocks — Stock Market Prediction Web App
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-blueviolet)](https://rcstocks.onrender.com)
+
 A Flask-powered web application that predicts next-day stock prices using supervised machine learning.
 Built with a clean UI/UX, dark theme, IST time support, daily caching, and a fully-tracked accuracy log system.
 
