@@ -175,30 +175,16 @@ Open your browser:
 
 ---
 
-## 📸 Screenshots (placeholders)
+## 📸 Screenshots
 
-Add actual screenshots:
-
-```
-/screenshots/
-    home.png
-    predict.png
-    logs.png
-    mobile_home.png
-```
-
-Example markdown:
-
-```md
 ### 🏠 Homepage
-![Homepage](screenshots/home.png)
+![Homepage](img/home.png)
 
 ### 🔮 Predict Page
-![Predict Page](screenshots/predict.png)
+![Predict Page](img/prediction.png)
 
 ### 📊 Logs / Model Stats
-![Logs Page](screenshots/logs.png)
-```
+![Logs Page](img/logs.png)
 
 ---
 
