@@ -20,9 +20,17 @@
         }
 
         @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* NAVBAR */
@@ -91,7 +99,8 @@
             font-size: 4.2rem;
             font-weight: 800;
             color: #dba400;
-            text-shadow: 0 0 18px rgba(219, 164, 0, 0.35);
+            text-shadow: none;
+            /* Removed to prevent clipping artifacts in scroll animation */
         }
 
         #date {
@@ -168,9 +177,17 @@
             letter-spacing: 0.08em;
         }
 
-        .trend-bullish { color: #00e676; }
-        .trend-bearish { color: #ff5252; }
-        .trend-neutral { color: #e0e0e0; }
+        .trend-bullish {
+            color: #00e676;
+        }
+
+        .trend-bearish {
+            color: #ff5252;
+        }
+
+        .trend-neutral {
+            color: #e0e0e0;
+        }
 
         .small-muted {
             font-size: 0.8rem;
@@ -238,63 +255,168 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- IST CLOCK SCRIPT -->
-    <script>
-        function updateISTClock() {
-            const now = new Date();
-            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const ist = new Date(utc + (5.5 * 3600000));
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-            let hrs = String(ist.getHours()).padStart(2, '0');
-            let mins = String(ist.getMinutes()).padStart(2, '0');
-            let secs = String(ist.getSeconds()).padStart(2, '0');
-
-            const clockEl = document.getElementById("clock");
-            const dateEl = document.getElementById("date");
-
-            if (clockEl) clockEl.innerText = `${hrs}:${mins}:${secs}`;
-            if (dateEl) dateEl.innerText = ist.toDateString();
+    <style>
+        /* SCROLLING CLOCK STYLES */
+        .clock-wrapper {
+            display: inline-flex;
+            overflow: hidden;
+            height: 80px;
+            /* Adjust closest to display-4 height */
+            line-height: 80px;
         }
 
-        setInterval(updateISTClock, 1000);
-        updateISTClock();
+        .clock-col {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .clock-col span {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clock-colon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            margin: 0 2px;
+        }
+
+        /* POPUP ANIMATIONS */
+        [data-aos="fade-up"] {
+            transform: translate3d(0, 30px, 0);
+            opacity: 0;
+            transition-property: transform, opacity;
+        }
+
+        [data-aos="fade-up"].aos-animate {
+            transform: translate3d(0, 0, 0);
+            opacity: 1;
+        }
+    </style>
+
+    <script>
+        // Initialize AOS
+        document.addEventListener('DOMContentLoaded', function () {
+            AOS.init({
+                duration: 800,
+                offset: 50,
+                easing: 'ease-out-cubic',
+                once: true
+            });
+            initClock();
+        });
+
+        function initClock() {
+            const clockEl = document.getElementById("clock");
+            if (!clockEl) return;
+
+            // Clear initial text (e.g. 00:00:00)
+            clockEl.innerHTML = "";
+            clockEl.classList.add("clock-wrapper");
+
+            // Create structure: H1 H2 : M1 M2 : S1 S2
+            const structures = ['h1', 'h2', 'colon', 'm1', 'm2', 'colon', 's1', 's2'];
+            const elements = {};
+
+            structures.forEach(type => {
+                if (type === 'colon') {
+                    const colon = document.createElement("div");
+                    colon.className = "clock-colon";
+                    colon.innerText = ":";
+                    clockEl.appendChild(colon);
+                } else {
+                    const wrapper = document.createElement("div");
+                    // hidden overflow handled by parent .clock-wrapper?? 
+                    // No, usually wrapper needs overflow hidden if we just scroll inside. 
+                    // But here clockEl has overflow hidden? 
+                    // Let's make individual wrappers for columns
+                    const colWrapper = document.createElement("div");
+                    colWrapper.style.overflow = "hidden";
+                    colWrapper.style.height = "80px";
+
+                    const col = document.createElement("div");
+                    col.className = "clock-col";
+
+                    // Populate 0-9
+                    for (let i = 0; i <= 9; i++) {
+                        const num = document.createElement("span");
+                        num.innerText = i;
+                        col.appendChild(num);
+                    }
+                    colWrapper.appendChild(col);
+                    clockEl.appendChild(colWrapper);
+                    elements[type] = col;
+                }
+            });
+
+            function update() {
+                const now = new Date();
+                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const ist = new Date(utc + (5.5 * 3600000));
+
+                const h = String(ist.getHours()).padStart(2, '0');
+                const m = String(ist.getMinutes()).padStart(2, '0');
+                const s = String(ist.getSeconds()).padStart(2, '0');
+
+                const timeStr = h + m + s; // e.g. "123045"
+                const map = ['h1', 'h2', 'm1', 'm2', 's1', 's2'];
+
+                map.forEach((key, idx) => {
+                    const val = parseInt(timeStr[idx]);
+                    const el = elements[key];
+                    // transform logic: -1 * val * 80px
+                    el.style.transform = `translateY(-${val * 80}px)`;
+                });
+
+                const dateEl = document.getElementById("date");
+                if (dateEl) dateEl.innerText = ist.toDateString();
+            }
+
+            setInterval(update, 1000);
+            update();
+        }
     </script>
 
     <footer class="mt-5 pt-4 pb-4">
-    <div class="container text-center">
-        <h5 class="footer-title">
-            rcStocks • Made by @RDC28
-        </h5>
+        <div class="container text-center">
+            <h5 class="footer-title">
+                rcStocks • Made by @RDC28
+            </h5>
 
-        <div class="d-flex justify-content-center gap-4 mt-3 flex-wrap">
-            <a href="https://github.com/RDC28" 
-               target="_blank" 
-               class="footer-link text-decoration-none">
-                <i class="fab fa-github me-2"></i>GitHub Profile
-            </a>
+            <div class="d-flex justify-content-center gap-4 mt-3 flex-wrap">
+                <a href="https://github.com/RDC28" target="_blank" class="footer-link text-decoration-none">
+                    <i class="fab fa-github me-2"></i>GitHub Profile
+                </a>
 
-            <a href="https://github.com/RDC28/machine-learning-projects/tree/main/major-projects/stock-market-prediction" 
-               target="_blank" 
-               class="footer-link text-decoration-none">
-                <i class="fas fa-code me-2"></i>Project Repository
-            </a>
+                <a href="https://github.com/RDC28/machine-learning-projects/tree/main/major-projects/stock-market-prediction"
+                    target="_blank" class="footer-link text-decoration-none">
+                    <i class="fas fa-code me-2"></i>Project Repository
+                </a>
 
-            <a href="https://www.linkedin.com/in/rchavda28" 
-               target="_blank" 
-               class="footer-link text-decoration-none">
-                <i class="fab fa-linkedin me-2"></i>LinkedIn
-            </a>
+                <a href="https://www.linkedin.com/in/rchavda28" target="_blank"
+                    class="footer-link text-decoration-none">
+                    <i class="fab fa-linkedin me-2"></i>LinkedIn
+                </a>
 
-            <a href="mailto:rchavda2005@outlook.com" 
-               class="footer-link text-decoration-none">
-                <i class="fas fa-envelope me-2"></i>Contact / Query
-            </a>
+                <a href="mailto:rchavda2005@outlook.com" class="footer-link text-decoration-none">
+                    <i class="fas fa-envelope me-2"></i>Contact / Query
+                </a>
+            </div>
+
+            <p class="small-muted mt-3 mb-0" style="opacity:0.8;">
+                © {{ current_year if current_year else "2025" }} RCSTOCKS — All Rights Reserved
+            </p>
         </div>
-
-        <p class="small-muted mt-3 mb-0" style="opacity:0.8;">
-            © {{ current_year if current_year else "2025" }} RCSTOCKS — All Rights Reserved
-        </p>
-    </div>
-</footer>
+    </footer>
 
 </body>
 

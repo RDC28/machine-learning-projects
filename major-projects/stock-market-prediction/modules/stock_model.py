@@ -101,7 +101,11 @@ def train_and_save_model(
     if "Close" not in df.columns:
         raise ValueError("Data does not contain 'Close' column.")
 
-    prices = df["Close"].values.astype(float).ravel()
+    close_col = df["Close"]
+    if isinstance(close_col, pd.DataFrame):
+        close_col = close_col.iloc[:, 0]
+
+    prices = close_col.values.astype(float).ravel()
 
     if len(prices) <= n_lags + 1:
         raise ValueError("Not enough data to train the model.")
@@ -215,7 +219,11 @@ def predict_next_close(
     if "Close" not in df_recent.columns:
         raise ValueError("Recent data does not contain 'Close' column.")
 
-    closes = df_recent["Close"].values.astype(float)
+    close_col = df_recent["Close"]
+    if isinstance(close_col, pd.DataFrame):
+        close_col = close_col.iloc[:, 0]
+
+    closes = close_col.values.astype(float)
 
     if len(closes) < n_lags:
         raise ValueError(
@@ -264,7 +272,11 @@ def get_stock_insights(
     if "Close" not in df_recent.columns:
         raise ValueError("Recent data does not contain 'Close' column.")
 
-    closes = df_recent["Close"].astype(float)
+    close_col = df_recent["Close"]
+    if isinstance(close_col, pd.DataFrame):
+        close_col = close_col.iloc[:, 0]
+
+    closes = close_col.astype(float)
     last_close = float(closes.iloc[-1])
 
     # 2. Get model prediction (this will auto-train if needed)

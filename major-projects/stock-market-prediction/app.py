@@ -133,8 +133,11 @@ def load_logs():
 def save_logs(logs):
     os.makedirs(JSON_DIR, exist_ok=True)
     payload = {"logs": logs}
-    with open(LOGS_PATH, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    try:
+        with open(LOGS_PATH, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+    except Exception as e:
+        print(f"Error saving logs: {e}")
 
 
 def recompute_logs_stats(logs):

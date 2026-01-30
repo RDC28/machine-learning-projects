@@ -1,4 +1,4 @@
-{% extends "layout.html" %}  
+{% extends "layout.html" %}
 {% set title = "Predict Stock Price" %}
 {% set active = "predict" %}
 
@@ -117,7 +117,7 @@
         margin-bottom: 0.4rem;
     }
 
-    .ticker-guidelines-list li + li {
+    .ticker-guidelines-list li+li {
         margin-top: 0.15rem;
     }
 
@@ -154,7 +154,7 @@
 </style>
 
 <!-- HERO / TITLE -->
-<section class="center-box d-flex justify-content-center align-items-center">
+<section class="center-box d-flex justify-content-center align-items-center" data-aos="fade-up">
     <div class="text-center">
         <h1 class="mb-2" style="font-size: 1.4rem; letter-spacing: 0.08em; text-transform: uppercase;">
             Predict a Stock Price
@@ -170,32 +170,25 @@
     <div class="container">
         <!-- Form + Ticker Instructions -->
         <div class="row justify-content-center mb-4">
-            <div class="col-12 col-lg-7 mb-3 mb-lg-0">
+            <div class="col-12 col-lg-7 mb-3 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
                 <form method="POST" class="glass-card">
                     <div class="mb-3">
                         <label for="ticker" class="form-label small-muted">Ticker Symbol</label>
-                        <input type="text"
-                               class="form-control predict-form-control"
-                               id="ticker"
-                               name="ticker"
-                               placeholder="e.g. AAPL, MSFT, TSLA, RELIANCE.NS"
-                               value="{{ ticker or '' }}">
+                        <input type="text" class="form-control predict-form-control" id="ticker" name="ticker"
+                            placeholder="e.g. AAPL, MSFT, TSLA, RELIANCE.NS" value="{{ ticker or '' }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="period" class="form-label small-muted">Recent History Period</label>
-                        <select class="form-select predict-form-select"
-                                id="period"
-                                name="period">
+                        <select class="form-select predict-form-select" id="period" name="period">
                             {% set options = {
-                                '1mo': 'Last 1 month',
-                                '3mo': 'Last 3 months',
-                                '6mo': 'Last 6 months',
-                                '1y': 'Last 1 year'
+                            '1mo': 'Last 1 month',
+                            '3mo': 'Last 3 months',
+                            '6mo': 'Last 6 months',
+                            '1y': 'Last 1 year'
                             } %}
                             {% for value, label in options.items() %}
-                            <option value="{{ value }}"
-                                {% if selected_period == value %}selected{% endif %}>
+                            <option value="{{ value }}" {% if selected_period==value %}selected{% endif %}>
                                 {{ label }}
                             </option>
                             {% endfor %}
@@ -203,10 +196,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="submit"
-                                name="action"
-                                value="run"
-                                class="btn btn-gold-pill px-4">
+                        <button type="submit" name="action" value="run" class="btn btn-gold-pill px-4">
                             Run Prediction
                         </button>
                     </div>
@@ -218,7 +208,7 @@
             </div>
 
             <!-- Instructions card -->
-            <div class="col-12 col-lg-5">
+            <div class="col-12 col-lg-5" data-aos="fade-left" data-aos-delay="200">
                 <div class="glass-card h-100">
                     <div class="ticker-guidelines-title">
                         How to enter ticker symbols
@@ -226,9 +216,13 @@
 
                     <ul class="ticker-guidelines-list">
                         <li>US stocks: plain ticker, e.g. <code>AAPL</code>, <code>MSFT</code>, <code>TSLA</code>.</li>
-                        <li>Indian NSE stocks: append <code>.NS</code>, e.g. <code>RELIANCE.NS</code>, <code>TATASTEEL.NS</code>.</li>
+                        <li>Indian NSE stocks: append <code>.NS</code>, e.g. <code>RELIANCE.NS</code>,
+                            <code>TATASTEEL.NS</code>.
+                        </li>
                         <li>Indian BSE stocks: append <code>.BO</code>, e.g. <code>SBIN.BO</code>.</li>
-                        <li>ETFs / indices often use their Yahoo Finance symbol (e.g. <code>QQQ</code>, <code>NIFTYBEES.NS</code>).</li>
+                        <li>ETFs / indices often use their Yahoo Finance symbol (e.g. <code>QQQ</code>,
+                            <code>NIFTYBEES.NS</code>).
+                        </li>
                         <li>Make sure there are no spaces: use <code>INFY.NS</code>, not <code>INFY .NS</code>.</li>
                     </ul>
 
@@ -261,7 +255,7 @@
         <!-- Prediction Result -->
         {% if insights %}
         <div class="row justify-content-center">
-            <div class="col-12 col-lg-8">
+            <div class="col-12 col-lg-8" data-aos="zoom-in-up" data-aos-delay="100">
                 <div class="glass-card d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
@@ -277,25 +271,22 @@
                             </div>
                             {% if selected_period %}
                             <div class="small-muted mt-1">
-                                Based on {{ options[selected_period] if options and selected_period in options else selected_period }}
+                                Based on {{ options[selected_period] if options and selected_period in options else
+                                selected_period }}
                             </div>
                             {% endif %}
                         </div>
                         <div>
                             {% set dir = 'flat' %}
                             {% if insights.expected_change_pct > 0 %}
-                                {% set dir = 'up' %}
-                            {% elif insights.expected_change_pct < 0 %}
-                                {% set dir = 'down' %}
-                            {% endif %}
-
-                            {% if dir == 'up' %}
-                            <span class="direction-badge direction-up">▲ Up</span>
-                            {% elif dir == 'down' %}
-                            <span class="direction-badge direction-down">▼ Down</span>
-                            {% else %}
-                            <span class="direction-badge direction-flat">▬ Flat</span>
-                            {% endif %}
+                            {% set dir = 'up' %}
+                            {% elif insights.expected_change_pct < 0 %} {% set dir='down' %} {% endif %} {% if dir=='up'
+                                %} <span class="direction-badge direction-up">▲ Up</span>
+                                {% elif dir == 'down' %}
+                                <span class="direction-badge direction-down">▼ Down</span>
+                                {% else %}
+                                <span class="direction-badge direction-flat">▬ Flat</span>
+                                {% endif %}
                         </div>
                     </div>
 
@@ -323,20 +314,25 @@
 
                         <div class="col-12 col-md-4">
                             <div class="small-muted">Moving Averages</div>
-                            <div>MA 7d: {{ insights.ma_7 | default('N/A') | round(2) if insights.ma_7 is not none else 'N/A' }}</div>
-                            <div>MA 30d: {{ insights.ma_30 | default('N/A') | round(2) if insights.ma_30 is not none else 'N/A' }}</div>
-                            <div>MA 90d: {{ insights.ma_90 | default('N/A') | round(2) if insights.ma_90 is not none else 'N/A' }}</div>
+                            <div>MA 7d: {{ insights.ma_7 | default('N/A') | round(2) if insights.ma_7 is not none else
+                                'N/A' }}</div>
+                            <div>MA 30d: {{ insights.ma_30 | default('N/A') | round(2) if insights.ma_30 is not none
+                                else 'N/A' }}</div>
+                            <div>MA 90d: {{ insights.ma_90 | default('N/A') | round(2) if insights.ma_90 is not none
+                                else 'N/A' }}</div>
                         </div>
 
                         <div class="col-12 col-md-4">
                             <div class="small-muted">Volatility & Position</div>
                             <div>
                                 Volatility (30d):
-                                {{ insights.daily_volatility_30d_pct | round(2) if insights.daily_volatility_30d_pct is not none else 'N/A' }}%
+                                {{ insights.daily_volatility_30d_pct | round(2) if insights.daily_volatility_30d_pct is
+                                not none else 'N/A' }}%
                             </div>
                             <div>
                                 vs 30d avg:
-                                {{ insights.position_vs_30d_pct | round(2) if insights.position_vs_30d_pct is not none else 'N/A' }}%
+                                {{ insights.position_vs_30d_pct | round(2) if insights.position_vs_30d_pct is not none
+                                else 'N/A' }}%
                             </div>
                         </div>
                     </div>
@@ -357,11 +353,9 @@
                     <input type="hidden" name="ticker" value="{{ insights.ticker }}">
                     <input type="hidden" name="period" value="{{ selected_period }}">
 
-                    <button type="submit"
-                            name="action"
-                            value="log"
-                            class="btn btn-outline-gold-pill px-4 save-log-btn {% if log_message %}disabled-btn{% endif %}"
-                            {% if log_message %}disabled aria-disabled="true"{% endif %}>
+                    <button type="submit" name="action" value="log"
+                        class="btn btn-outline-gold-pill px-4 save-log-btn {% if log_message %}disabled-btn{% endif %}"
+                        {% if log_message %}disabled aria-disabled="true" {% endif %}>
                         Save this prediction to logs
                     </button>
 

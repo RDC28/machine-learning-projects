@@ -1,8 +1,8 @@
 {
-  "last_updated": "2025-12-06",
-  "total_logged": 11,
-  "total_evaluated": 3,
-  "avg_abs_error": 2.2761639422583357,
-  "avg_pct_error": 0.4096339151046922,
-  "direction_accuracy": 33.33333333333333
+  "last_updated": "2026-01-30",
+  "total_logged": 51,
+  "total_evaluated": 0,
+  "avg_abs_error": null,
+  "avg_pct_error": null,
+  "direction_accuracy": null
 }
