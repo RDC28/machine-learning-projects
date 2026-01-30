@@ -1,229 +1,175 @@
-# 🚀 rcStocks — Stock Market Prediction Web App
+# rcStocks — Stock Market Prediction Web App
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-blueviolet)](https://rcstocks.onrender.com)
 
-A Flask-powered web application that predicts next-day stock prices using supervised machine learning.
-Built with a clean UI/UX, dark theme, IST time support, daily caching, and a fully-tracked accuracy log system.
+A Flask web application that predicts next-day stock prices using machine learning. Features a clean dark UI, IST timezone support, daily caching, and a complete accuracy tracking system.
 
 ---
 
-## ⭐ Features
+## Features
 
-### 🔮 **Next-Day Stock Price Prediction**
+### Next-Day Price Predictions
 
-* Uses historical OHLC data from *Yahoo Finance* (via `yfinance`)
-* Automatically trains per-ticker Linear Regression models
-* Stores trained models in `models/` for reuse
-* Predictions include:
+The app pulls historical OHLC data from Yahoo Finance and trains a Linear Regression model for each ticker. Models are saved locally for reuse, so predictions are fast after the first run.
 
-  * Last close price
-  * Predicted next close
-  * Expected move (abs + %)
-  * Direction (Up / Down / Flat)
-  * Short-term trend insights (MA7, MA30, MA90)
+Each prediction includes:
+- Last closing price
+- Predicted next close
+- Expected move (absolute value and percentage)
+- Direction indicator (Up / Down / Flat)
+- Short-term trend analysis using 7, 30, and 90-day moving averages
 
----
+### Homepage Dashboard
 
-### 🏆 **Daily Top-5 Predictions (Homepage Dashboard)**
+The landing page displays predictions for 5 major tech stocks (AAPL, MSFT, AMZN, GOOGL, TSLA). These are cached once per day in IST timezone to avoid hammering the API, and the results are stored in `json/top_stocks.json`.
 
-The home page shows:
+### Prediction Logging & Accuracy Tracking
 
-* Top 5 selected tickers (AAPL, MSFT, AMZN, GOOGL, TSLA)
-* Cached *once per day* (IST) in `json/top_stocks.json`
-* Beautiful responsive card UI
-* Instant loading without hitting APIs repeatedly
+After making a prediction, you can log it to track how accurate the model is over time. Here's how it works:
 
----
+- **Add predictions** — Save any prediction to the log database
+- **Auto-evaluation** — When you visit `/logs`, yesterday's predictions are automatically checked against actual closing prices
+- **Error metrics** — Calculates absolute error, percentage error, and direction accuracy
+- **History limit** — Keeps the latest 100 entries in `json/logs.json`
 
-### 📅 **Prediction Logging System**
+The logs page also shows aggregated statistics:
+- Average absolute error
+- Average percent error  
+- Direction prediction accuracy
+- Best and worst predictions
+- Full log history
 
-The app includes a full prediction tracking system:
+All stats are computed and cached in `json/logs_data.json`.
 
-#### ✔ Add predictions to log
+### Automatic Model Cleanup
 
-After predicting a stock on `/predict`, users can add the result to the logs database.
+The app automatically deletes unused model files to keep things tidy. It only keeps models for:
+- The 5 homepage tickers
+- Any tickers with pending predictions in the logs
 
-#### ✔ Daily cross-check
+Everything else gets cleaned up automatically.
 
-When `/logs` is opened:
+### UI/UX
 
-* Pending predictions (yesterday’s targets) are auto-evaluated
-* Actual closing prices are fetched and compared
-* Errors and accuracy metrics are computed
-* Results are cached
-
-#### ✔ Last 100 logs stored
-
-Logged in `json/logs.json` with only the latest **100** entries retained.
-
-#### ✔ Model statistics page
-
-Shows a mini dashboard with:
-
-* Average absolute error
-* Average percent error
-* Direction prediction accuracy
-* Best and worst predictions
-* Latest 100 logged entries
-
-Aggregated stats are stored in `json/logs_data.json`.
+Built with Bootstrap 5 and a custom dark theme. The color scheme uses `#181818` for the background with gold accents (`#dba400`). Every page includes an IST live clock and follows a consistent card-based layout via `layout.html`.
 
 ---
 
-### 🗂 Smart Model Cleanup
-
-Old/unneeded `.pkl` models are deleted automatically:
-
-* Keeps only:
-
-  * Homepage tickers
-  * Pending log tickers
-* Everything else is cleaned automatically
-* Ensures the `/models` folder stays small & tidy
-
----
-
-### 🎨 **Clean UI / UX + Dark Theme**
-
-* Fully responsive with Bootstrap 5
-* Custom dark theme (`#181818`) with gold accent (`#dba400`)
-* Soft gradients, glowing highlights, consistent cards
-* Unified layout via `layout.html`
-* IST live digital clock included on all pages
-
----
-
-## 🛠 Tech Stack
+## Tech Stack
 
 **Backend**
-
-* Flask (Python)
-* Scikit-learn (Linear Regression)
-* yfinance API
-* JSON-based caching
+- Flask (Python)
+- Scikit-learn (Linear Regression)
+- yfinance for market data
+- JSON-based caching system
 
 **Frontend**
-
-* Bootstrap 5
-* HTML + Jinja2 templating
-* Custom dark CSS theme
-* Responsive dashboard cards
+- Bootstrap 5
+- Jinja2 templating
+- Custom CSS with dark theme
 
 **Storage**
-
-* `/models` → trained ML models (`.pkl`)
-* `/json/top_stocks.json` → daily cached insights
-* `/json/logs.json` → prediction logs
-* `/json/logs_data.json` → computed accuracy statistics
+- `models/` — trained ML models (.pkl files)
+- `json/top_stocks.json` — daily cached predictions
+- `json/logs.json` — prediction history
+- `json/logs_data.json` — accuracy statistics
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 project/
 │
-├── app.py                    # Flask server + routes + caching + logs
+├── app.py                    # Flask routes, caching, and log management
 ├── modules/
-│   └── stock_model.py        # Fetch, train, evaluate, predict, insights
+│   └── stock_model.py        # Data fetching, training, and prediction logic
 │
 ├── templates/
-│   ├── layout.html           # Global layout (navbar, footer, clock)
-│   ├── index.html            # Homepage + Top 5 dashboard
-│   ├── predict.html          # Stock prediction page
-│   └── logs.html             # Model statistics + log viewer
+│   ├── layout.html           # Base template with navbar and footer
+│   ├── index.html            # Homepage with top 5 predictions
+│   ├── predict.html          # Individual stock prediction page
+│   └── logs.html             # Statistics and log viewer
 │
-├── models/                   # Auto-managed trained model .pkl files
+├── models/                   # Trained model files (auto-managed)
 │
 └── json/
-    ├── top_stocks.json       # Cached daily top 5 predictions
-    ├── logs.json             # User prediction logs
-    └── logs_data.json        # Aggregated accuracy metrics
+    ├── top_stocks.json       # Cached daily predictions
+    ├── logs.json             # Prediction logs
+    └── logs_data.json        # Aggregated metrics
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation
 
-### 1. Clone repo
-
+Clone the repository:
 ```bash
 git clone https://github.com/RDC28/your-repo.git
 cd your-repo
 ```
 
-### 2. Create virtual environment
-
+Create a virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate      # Mac/Linux
 venv\Scripts\activate         # Windows
 ```
 
-### 3. Install dependencies
-
+Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the app
-
+Run the app:
 ```bash
 python app.py
 ```
 
-Open your browser:
-👉 **[http://127.0.0.1:5000/](http://127.0.0.1:5000/)**
+Then open [http://127.0.0.1:5000/](http://127.0.0.1:5000/) in your browser.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
-### 🏠 Homepage
+**Homepage**  
 ![Homepage](img/home.png)
 
-### 🔮 Predict Page
+**Prediction Page**  
 ![Predict Page](img/prediction.png)
 
-### 📊 Logs / Model Stats
+**Logs & Statistics**  
 ![Logs Page](img/logs.png)
 
 ---
 
-## 📈 Model Details
+## How the Model Works
 
-### Algorithm
+**Algorithm:** Linear Regression (simple baseline model)
 
-* **Linear Regression** (simple, fast, baseline model)
+**Input features:** The last 5 closing prices
 
-### Inputs
+**Output:** Next-day predicted closing price, along with:
+- Expected move and percentage change
+- Predicted direction
+- Moving average signals and volatility indicators
 
-* Last 5 closing prices (lag-based supervised learning)
-
-### Outputs
-
-* Next-day predicted closing price
-* Expected move + %
-* Direction (Up/Down/Flat)
-
-### Metrics (per log entry)
-
-* Absolute error
-* Percent error
-* Direction correctness
-* Moving averages & volatility-based signals
+**Evaluation metrics** (tracked per log entry):
+- Absolute error
+- Percentage error  
+- Direction accuracy
 
 ---
 
-## ⚠ Disclaimer
+## Disclaimer
 
-This is an educational project.
-Predictions are based solely on historical price patterns and **should not be used for real trading or financial decisions**.
+This is an educational project built to explore machine learning applications in finance. The predictions are based purely on historical price patterns and **should not be used for actual trading or investment decisions**.
 
 ---
 
-## 📬 Contact
+## Contact
 
-**Author:** @RDC28
-**GitHub:** [https://github.com/RDC28](https://github.com/RDC28)
-**Queries:** [rchavda2005@outlook.com](mailto:rchavda2005@outlook.com)
+**Author:** @RDC28  
+**GitHub:** [https://github.com/RDC28](https://github.com/RDC28)  
+**LinkedIn:** [rchavda28](https://linkedin.com/rchavda28)
+**Email:** [rchavda2005@outlook.com](mailto:rchavda2005@outlook.com)
