@@ -19,7 +19,7 @@ MODEL_PATH = os.path.join(MODEL_DIR, 'skin_cancer_model_best.h5')
 # Option 1: Hugging Face Hub (Recommended)
 # Upload your model to: https://huggingface.co/new
 # Then set: HF_REPO = "your-username/skin-cancer-model"
-HF_REPO = os.environ.get('HF_REPO', None)  # e.g., "RDC28/skin-cancer-model"
+HF_REPO = os.environ.get('HF_REPO', 'rdc28/skin-canc-classi')  # Default to your repo
 HF_FILENAME = "skin_cancer_model_best.h5"
 
 # Option 2: Google Drive
