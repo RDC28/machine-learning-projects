@@ -1,0 +1,21 @@
+# Production Requirements - Skin Cancer Detection
+# Lightweight deployment without heavy training dependencies
+
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Image Processing (lightweight)
+Pillow==10.2.0
+numpy==1.26.3
+
+# Inference Engine - Choose ONE:
+# Option 1: ONNX Runtime (Recommended - ~50MB, very fast)
+onnxruntime==1.16.3
+
+# Option 2: TensorFlow CPU-only (if ONNX not available - ~200MB)
+# Uncomment below if you need TensorFlow fallback:
+# tensorflow-cpu==2.15.0
+
+# Production Server
+gunicorn==21.2.0

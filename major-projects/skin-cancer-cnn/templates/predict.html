@@ -1,0 +1,330 @@
+{% extends 'layout.html' %}
+
+{% block title %}Predict - Skin Cancer Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .predict-section {
+        padding: 4rem 0;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+        font-size: 1.1rem;
+    }
+
+    .upload-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .upload-area {
+        border: 2px dashed rgba(0, 191, 165, 0.5);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(0, 191, 165, 0.05);
+    }
+
+    .upload-area:hover {
+        border-color: var(--primary-color);
+        background: rgba(0, 191, 165, 0.1);
+    }
+
+    .upload-area.dragover {
+        border-color: var(--primary-light);
+        background: rgba(0, 191, 165, 0.15);
+    }
+
+    .upload-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .upload-text {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    #file-input {
+        display: none;
+    }
+
+    .preview-container {
+        margin-top: 2rem;
+        text-align: center;
+        display: none;
+    }
+
+    .preview-image {
+        max-width: 300px;
+        max-height: 300px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        border: 2px solid var(--border-color);
+    }
+
+    .file-name {
+        margin-top: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .submit-btn {
+        margin-top: 2rem;
+        width: 100%;
+    }
+
+    /* Result Styles */
+    .result-container {
+        margin-top: 3rem;
+        padding: 2rem;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .result-benign {
+        background: rgba(0, 230, 118, 0.12);
+        border: 1px solid rgba(0, 230, 118, 0.4);
+    }
+
+    .result-malignant {
+        background: rgba(255, 82, 82, 0.12);
+        border: 1px solid rgba(255, 82, 82, 0.4);
+    }
+
+    .result-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .result-benign .result-title {
+        color: var(--success-color);
+    }
+
+    .result-malignant .result-title {
+        color: var(--danger-color);
+    }
+
+    .confidence-label {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .confidence-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .confidence-bar {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+
+    .confidence-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 1s ease;
+    }
+
+    .result-benign .confidence-fill {
+        background: linear-gradient(90deg, #00c853, #64ffda);
+    }
+
+    .result-malignant .confidence-fill {
+        background: linear-gradient(90deg, #ff5252, #ff8a80);
+    }
+
+    .result-description {
+        color: var(--text-secondary);
+        margin-top: 1.5rem;
+        line-height: 1.7;
+    }
+
+    .disclaimer {
+        margin-top: 3rem;
+        padding: 1.5rem;
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    .disclaimer-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .disclaimer-text {
+        color: var(--warning-color);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .uploaded-image-result {
+        max-width: 200px;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: 2px solid var(--border-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .upload-area {
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="predict-section">
+        <h1 class="page-title">Skin Lesion Analysis</h1>
+        <p class="page-subtitle">Upload an image of your skin lesion for AI-powered analysis</p>
+
+        <div class="upload-container">
+            <div class="glass-card">
+                <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" id="upload-form">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📤</div>
+                        <p class="upload-text">Drag & drop your image here</p>
+                        <p class="upload-hint">or click to browse (JPG, PNG, JPEG)</p>
+                        <input type="file" name="file" id="file-input" accept="image/*" required>
+                    </div>
+
+                    <div class="preview-container" id="preview-container">
+                        <img src="" alt="Preview" class="preview-image" id="preview-image">
+                        <p class="file-name" id="file-name"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-gradient submit-btn">
+                        <i class="fas fa-search me-2"></i>Analyze Image
+                    </button>
+                </form>
+            </div>
+
+            {% if prediction %}
+            <div class="result-container glass-card result-{{ prediction.class|lower }}">
+                {% if uploaded_image %}
+                <img src="{{ url_for('static', filename='uploads/' + uploaded_image) }}" alt="Uploaded Image"
+                    class="uploaded-image-result">
+                {% endif %}
+                <h3 class="result-title">
+                    {% if prediction.class == 'Benign' %}
+                    ✅ Prediction: Benign
+                    {% else %}
+                    ⚠️ Prediction: Malignant
+                    {% endif %}
+                </h3>
+                <p class="confidence-label">Confidence Level:</p>
+                <p class="confidence-value">{{ prediction.confidence }}%</p>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: {{ prediction.confidence }}%"></div>
+                </div>
+                <p class="result-description">
+                    {% if prediction.class == 'Benign' %}
+                    The model predicts this lesion appears to be benign. However, please consult a dermatologist for
+                    proper diagnosis.
+                    {% else %}
+                    The model has detected features that may indicate a malignant lesion. Please seek immediate
+                    consultation with a dermatologist.
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="disclaimer">
+                <div class="disclaimer-icon">⚠️</div>
+                <p class="disclaimer-text">
+                    <strong>Disclaimer:</strong> This tool is for educational purposes only and should not replace
+                    professional medical advice. Always consult a qualified dermatologist for proper diagnosis.
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('file-input');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const fileName = document.getElementById('file-name');
+
+    // Click to upload
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                fileName.textContent = file.name;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+{% endblock %}

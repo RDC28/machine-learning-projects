@@ -1,0 +1,2 @@
+# Model files will be saved here after training
+# Run: python -m module.train_model to train the model

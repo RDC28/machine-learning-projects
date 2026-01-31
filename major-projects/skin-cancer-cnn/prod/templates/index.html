@@ -1,0 +1,249 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home - Skin Cancer Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        padding: 6rem 0;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        line-height: 1.8;
+    }
+
+    .hero-image {
+        max-width: 500px;
+        margin: 3rem auto 0;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    .features-section {
+        padding: 4rem 0;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+    }
+
+    .feature-description {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .stats-section {
+        padding: 4rem 0;
+        background: rgba(0, 191, 165, 0.08);
+        border: 1px solid rgba(0, 191, 165, 0.2);
+        border-radius: 30px;
+        margin: 2rem 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 0.5rem;
+    }
+
+    .cta-section {
+        padding: 4rem 0;
+        text-align: center;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .cta-description {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">AI-Powered Skin Cancer Detection</h1>
+        <p class="hero-subtitle">
+            Upload your skin lesion image and get instant predictions powered by advanced
+            Convolutional Neural Networks. Early detection can save lives.
+        </p>
+        <a href="{{ url_for('predict') }}" class="btn btn-gradient btn-lg">
+            <i class="fas fa-search me-2"></i>Start Detection
+        </a>
+        <div class="hero-image">
+            <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="50" y="50" width="300" height="200" rx="20" fill="url(#grad1)" opacity="0.3" />
+                <circle cx="200" cy="150" r="60" fill="url(#grad2)" opacity="0.5" />
+                <path d="M160 150 L180 170 L240 110" stroke="#00bfa5" stroke-width="8" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00bfa5" />
+                        <stop offset="100%" style="stop-color:#64ffda" />
+                    </linearGradient>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00bfa5" />
+                        <stop offset="100%" style="stop-color:#64ffda" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">Deep Learning Model</h3>
+                    <p class="feature-description">
+                        Powered by a Convolutional Neural Network trained on the ISIC dataset
+                        for accurate skin lesion classification.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Instant Results</h3>
+                    <p class="feature-description">
+                        Get predictions in seconds. Simply upload an image and receive
+                        immediate analysis results.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Privacy First</h3>
+                    <p class="feature-description">
+                        Your images are processed securely and not stored permanently.
+                        Your privacy is our priority.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">2,637+</div>
+                    <div class="stat-label">Training Images</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Classes</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">CNN</div>
+                    <div class="stat-label">Model Type</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">ISIC</div>
+                    <div class="stat-label">Dataset</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="cta-title">Ready to Check Your Skin?</h2>
+        <p class="cta-description">
+            Upload an image of your skin lesion and let our AI analyze it for you.
+        </p>
+        <a href="{{ url_for('predict') }}" class="btn btn-gradient btn-lg">
+            <i class="fas fa-upload me-2"></i>Upload Image Now
+        </a>
+    </section>
+</div>
+{% endblock %}

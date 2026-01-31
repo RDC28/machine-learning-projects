@@ -1,0 +1,331 @@
+{% extends 'layout.html' %}
+
+{% block title %}About - Skin Cancer Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-section {
+        padding: 4rem 0;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+        font-size: 1.1rem;
+    }
+
+    .about-content {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .about-text {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-text strong {
+        color: var(--text-primary);
+    }
+
+    .about-text li {
+        margin-bottom: 0.5rem;
+    }
+
+    .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .tech-badge {
+        background: rgba(0, 191, 165, 0.15);
+        color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border: 1px solid rgba(0, 191, 165, 0.3);
+    }
+
+    .class-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .class-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .class-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .class-benign .class-title {
+        color: var(--success-color);
+    }
+
+    .class-malignant .class-title {
+        color: var(--danger-color);
+    }
+
+    .class-description {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .architecture-section {
+        margin-top: 3rem;
+    }
+
+    .architecture-diagram {
+        background: rgba(0, 191, 165, 0.05);
+        border: 1px solid rgba(0, 191, 165, 0.2);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .layer-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .layer-item:hover {
+        background: rgba(0, 191, 165, 0.1);
+        border-color: rgba(0, 191, 165, 0.3);
+    }
+
+    .layer-icon {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+
+    .layer-name {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .layer-details {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-left: auto;
+        font-family: monospace;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+    }
+
+    .warning-box {
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .warning-title {
+        color: var(--warning-color);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .warning-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .layer-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .layer-details {
+            margin-left: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="about-section">
+        <h1 class="page-title">About This Project</h1>
+        <p class="page-subtitle">Learn about our AI-powered skin cancer detection system</p>
+
+        <div class="about-content">
+            <!-- Overview -->
+            <div class="glass-card mb-4">
+                <h3 class="section-title"><i class="fas fa-bullseye me-2"></i>Overview</h3>
+                <p class="about-text">
+                    This web application uses a Convolutional Neural Network (CNN) to classify skin lesion
+                    images as either benign or malignant. The model has been trained on the ISIC
+                    (International Skin Imaging Collaboration) dataset, which is considered the gold
+                    standard for skin cancer image classification.
+                </p>
+                <p class="about-text">
+                    Skin cancer is one of the most common forms of cancer worldwide. Early detection
+                    significantly improves treatment outcomes and survival rates. This tool aims to
+                    assist in preliminary screening, though it should never replace professional
+                    medical diagnosis.
+                </p>
+            </div>
+
+            <!-- Classes -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="glass-card class-card class-benign">
+                        <div class="class-icon">✅</div>
+                        <h4 class="class-title">Benign</h4>
+                        <p class="class-description">
+                            Non-cancerous skin lesions that are typically harmless. Examples include
+                            common moles, seborrheic keratoses, and dermatofibromas. While generally
+                            safe, monitoring for changes is still recommended.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-card class-card class-malignant">
+                        <div class="class-icon">⚠️</div>
+                        <h4 class="class-title">Malignant</h4>
+                        <p class="class-description">
+                            Cancerous skin lesions that require medical attention. This includes
+                            melanoma, the most dangerous form of skin cancer. Early detection and
+                            treatment are crucial for positive outcomes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dataset -->
+            <div class="glass-card mb-4">
+                <h3 class="section-title"><i class="fas fa-database me-2"></i>Dataset</h3>
+                <p class="about-text">
+                    The model is trained on the ISIC Skin Cancer Dataset, comprising:
+                </p>
+                <ul class="about-text">
+                    <li><strong>Training Set:</strong> 2,637 images (1,440 benign, 1,197 malignant)</li>
+                    <li><strong>Test Set:</strong> 660 images (360 benign, 300 malignant)</li>
+                </ul>
+                <p class="about-text">
+                    The ISIC dataset is curated by dermatologists and contains high-quality dermoscopic
+                    images of various skin lesions.
+                </p>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="glass-card mb-4">
+                <h3 class="section-title"><i class="fas fa-cogs me-2"></i>Technology Stack</h3>
+                <p class="about-text">
+                    This application is built using modern technologies:
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge"><i class="fab fa-python me-1"></i>Python</span>
+                    <span class="tech-badge"><i class="fas fa-flask me-1"></i>Flask</span>
+                    <span class="tech-badge"><i class="fas fa-brain me-1"></i>TensorFlow / Keras</span>
+                    <span class="tech-badge"><i class="fas fa-camera me-1"></i>OpenCV</span>
+                    <span class="tech-badge"><i class="fas fa-calculator me-1"></i>NumPy</span>
+                    <span class="tech-badge"><i class="fas fa-image me-1"></i>Pillow</span>
+                    <span class="tech-badge"><i class="fab fa-bootstrap me-1"></i>Bootstrap 5</span>
+                </div>
+            </div>
+
+            <!-- Model Architecture -->
+            <div class="glass-card architecture-section mb-4">
+                <h3 class="section-title"><i class="fas fa-project-diagram me-2"></i>CNN Architecture</h3>
+                <p class="about-text">
+                    Our model uses a custom CNN architecture optimized for skin lesion classification:
+                </p>
+                <div class="architecture-diagram">
+                    <div class="layer-item">
+                        <span class="layer-icon">📥</span>
+                        <span class="layer-name">Input Layer</span>
+                        <span class="layer-details">224 × 224 × 3</span>
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-icon">🔲</span>
+                        <span class="layer-name">Conv2D + ReLU + MaxPool</span>
+                        <span class="layer-details">32 filters, 3×3</span>
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-icon">🔲</span>
+                        <span class="layer-name">Conv2D + ReLU + MaxPool</span>
+                        <span class="layer-details">64 filters, 3×3</span>
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-icon">🔲</span>
+                        <span class="layer-name">Conv2D + ReLU + MaxPool</span>
+                        <span class="layer-details">128 filters, 3×3</span>
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-icon">📊</span>
+                        <span class="layer-name">Flatten</span>
+                        <span class="layer-details">-</span>
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-icon">🔗</span>
+                        <span class="layer-name">Dense + Dropout</span>
+                        <span class="layer-details">512 units, 0.5</span>
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-icon">📤</span>
+                        <span class="layer-name">Output (Sigmoid)</span>
+                        <span class="layer-details">1 unit</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="warning-box">
+                <h4 class="warning-title"><i class="fas fa-exclamation-triangle me-2"></i>Important Disclaimer</h4>
+                <p class="warning-text">
+                    This application is designed for educational and research purposes only. It is NOT
+                    a substitute for professional medical advice, diagnosis, or treatment. Always seek
+                    the advice of a qualified healthcare provider with any questions you may have
+                    regarding a medical condition. Never disregard professional medical advice or delay
+                    in seeking it because of something you have seen in this application.
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

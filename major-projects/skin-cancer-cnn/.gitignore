@@ -1,0 +1,54 @@
+# Virtual environment
+venv/
+env/
+.env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Model files (large files - use Git LFS for these)
+*.h5
+*.pkl
+*.keras
+*.pb
+*.onnx
+model/saved_model/
+
+# Upload files
+static/uploads/*
+!static/uploads/.gitkeep
+prod/static/uploads/*
+!prod/static/uploads/.gitkeep
+
+# Training data (too large for git)
+data/
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.temp
