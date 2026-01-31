@@ -2,25 +2,20 @@
 # Lightweight deployment without heavy training dependencies
 
 # Web Framework
-Flask==3.0.0
-Werkzeug==3.0.1
+Flask>=3.0.0
+Werkzeug>=3.0.1
 
-# Image Processing (lightweight)
-Pillow==10.2.0
-numpy==1.26.3
+# Image Processing (compatible with Python 3.11+)
+Pillow>=10.4.0
+numpy>=1.26.0
 
 # Model Download (choose based on your storage)
-huggingface_hub==0.20.3    # For Hugging Face Hub
-gdown==5.1.0               # For Google Drive
-requests>=2.31.0           # For direct URL download
+huggingface_hub>=0.20.0
+gdown>=5.1.0
+requests>=2.31.0
 
-# Inference Engine - Choose ONE:
-# Option 1: ONNX Runtime (Recommended - ~50MB, very fast)
-onnxruntime==1.16.3
-
-# Option 2: TensorFlow CPU-only (if ONNX not available - ~200MB)
-# Uncomment below if you need TensorFlow fallback:
-# tensorflow-cpu==2.15.0
+# Inference Engine - Using TensorFlow CPU for H5 model support
+tensorflow-cpu>=2.15.0
 
 # Production Server
-gunicorn==21.2.0
+gunicorn>=21.2.0
