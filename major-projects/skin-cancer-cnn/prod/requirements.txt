@@ -9,6 +9,11 @@ Werkzeug==3.0.1
 Pillow==10.2.0
 numpy==1.26.3
 
+# Model Download (choose based on your storage)
+huggingface_hub==0.20.3    # For Hugging Face Hub
+gdown==5.1.0               # For Google Drive
+requests>=2.31.0           # For direct URL download
+
 # Inference Engine - Choose ONE:
 # Option 1: ONNX Runtime (Recommended - ~50MB, very fast)
 onnxruntime==1.16.3

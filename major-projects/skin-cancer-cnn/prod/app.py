@@ -249,6 +249,12 @@ def server_error(e):
 if __name__ == '__main__':
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     
+    # Download model if not present
+    from download_model import ensure_model_exists
+    if not ensure_model_exists():
+        print("\n⚠️  Warning: Model not available. Predictions will fail.")
+        print("    Set HF_REPO, GDRIVE_FILE_ID, or MODEL_URL environment variable.")
+    
     # Pre-load model
     load_model()
     

@@ -8,64 +8,108 @@ Lightweight production version of the Skin Cancer Detection web app.
 prod/
 ├── app.py              # Flask application (production)
 ├── requirements.txt    # Lightweight dependencies
-├── convert_to_onnx.py  # Model conversion script (run once)
+├── download_model.py   # Auto-download model on startup
+├── convert_to_onnx.py  # Model conversion script (optional)
 ├── templates/          # HTML templates
-├── static/
-│   └── uploads/        # Uploaded images
-└── model/
-    └── skin_cancer_model_best.h5   # Trained model
+├── static/uploads/     # Uploaded images
+└── model/              # Model files (downloaded on startup)
 ```
 
-## 🚀 Deployment Options
+## 🚀 Deploy to Render.com
 
-### Option 1: ONNX Runtime (Recommended - Lightweight)
+### Step 1: Upload Model to Hugging Face (Recommended)
 
-**Step 1:** Convert model to ONNX format (run once, requires TensorFlow):
+1. Create account at [huggingface.co](https://huggingface.co)
+2. Create new model repository: https://huggingface.co/new
+3. Upload `skin_cancer_model_best.h5` to your repo
+4. Note your repo name: `your-username/skin-cancer-model`
+
+### Step 2: Deploy on Render
+
+1. Go to [render.com](https://render.com) → New → Web Service
+2. Connect your GitHub repo
+3. Configure:
+   - **Root Directory**: `major-projects/skin-cancer-cnn/prod`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+4. Add Environment Variable:
+   - `HF_REPO` = `your-username/skin-cancer-model`
+5. Deploy!
+
+## 🔧 Model Storage Options
+
+### Option 1: Hugging Face Hub ⭐ (Recommended)
+
 ```bash
-pip install tensorflow tf2onnx onnx
-python convert_to_onnx.py
+# Set environment variable on Render
+HF_REPO=RDC28/skin-cancer-model
 ```
 
-**Step 2:** Deploy with ONNX Runtime only:
+Best for: ML models, free, versioned, fast CDN
+
+### Option 2: Google Drive
+
+1. Upload model to Google Drive
+2. Share → "Anyone with link"
+3. Copy file ID from URL: `https://drive.google.com/file/d/FILE_ID/view`
+
 ```bash
-pip install -r requirements.txt
-python app.py
+# Set environment variable on Render
+GDRIVE_FILE_ID=your_file_id_here
 ```
 
-**Benefits:**
-- ONNX Runtime: ~50MB vs TensorFlow: ~500MB+
-- Faster cold starts
-- Lower memory usage
-- No TensorFlow dependency in production
+### Option 3: GitHub Releases
 
-### Option 2: TensorFlow Fallback
+1. Go to your repo → Releases → Create new release
+2. Attach `skin_cancer_model_best.h5` as asset
+3. Copy direct download URL
 
-If you skip ONNX conversion, the app will use TensorFlow:
 ```bash
-pip install flask pillow numpy tensorflow-cpu gunicorn
-python app.py
-```
-
-## 🌐 Production Server
-
-For production, use Gunicorn:
-```bash
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+# Set environment variable on Render
+MODEL_URL=https://github.com/RDC28/machine-learning-projects/releases/download/v1.0/skin_cancer_model_best.h5
 ```
 
 ## 📊 Size Comparison
 
-| Dependency      | Size     |
-|-----------------|----------|
-| ONNX Runtime    | ~50 MB   |
-| TensorFlow CPU  | ~200 MB  |
-| Full TensorFlow | ~500+ MB |
+| Component | With TensorFlow | With ONNX Runtime |
+|-----------|-----------------|-------------------|
+| Dependencies | ~500 MB | ~50 MB |
+| Cold Start | ~30 sec | ~5 sec |
+| Memory | ~500 MB | ~200 MB |
 
-## ⚠️ Notes
+## 🌐 Local Testing
 
-- The `uploads/` folder stores temporary uploaded images
-- Consider adding a cleanup job for old uploads
-- For HTTPS, use a reverse proxy like Nginx
+```bash
+cd prod
+
+# Set model source (choose one)
+export HF_REPO="RDC28/skin-cancer-model"
+# OR
+export GDRIVE_FILE_ID="your_file_id"
+# OR
+export MODEL_URL="https://..."
+
+# Install and run
+pip install -r requirements.txt
+python app.py
+```
+
+## 📝 Render.yaml (Optional)
+
+Create `render.yaml` in repo root for auto-deploy:
+
+```yaml
+services:
+  - type: web
+    name: skin-cancer-detection
+    env: python
+    rootDir: major-projects/skin-cancer-cnn/prod
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: HF_REPO
+        value: RDC28/skin-cancer-model
+```
 
 ## 👤 Author
 
