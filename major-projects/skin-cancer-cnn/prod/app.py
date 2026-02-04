@@ -66,6 +66,19 @@ def load_model():
     """Load the trained model."""
     global model, ort_session, USE_ONNX
     
+    # AUTO-DOWNLOAD: Ensure model exists before attempting to load
+    # This handles the case where the model is not in the repo (Render deployment)
+    if not os.path.exists(H5_MODEL_PATH) and not os.path.exists(ONNX_MODEL_PATH):
+        print("Model files not found. Attempting to download...")
+        try:
+            from download_model import ensure_model_exists
+            if ensure_model_exists():
+                print("Download successful/verified.")
+            else:
+                print("Download failed.")
+        except Exception as e:
+            print(f"Error triggering model download: {e}")
+
     if USE_ONNX:
         if ort_session is None:
             if os.path.exists(ONNX_MODEL_PATH):
