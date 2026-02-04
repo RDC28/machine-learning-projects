@@ -38,6 +38,10 @@ def convert_h5_to_onnx():
     input_signature = [tf.TensorSpec(shape=(None, 224, 224, 3), dtype=tf.float32, name='input')]
     
     # Convert to ONNX
+    # Fix for Keras 3.x / TF 2.16+ compatibility where output_names might be missing
+    if not hasattr(model, 'output_names'):
+        model.output_names = ['output_1']
+    
     onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=input_signature, opset=13)
     
     # Save ONNX model
