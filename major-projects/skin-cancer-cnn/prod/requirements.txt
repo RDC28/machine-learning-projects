@@ -7,7 +7,7 @@ Werkzeug>=3.0.1
 
 # Image Processing (compatible with Python 3.11+)
 Pillow>=10.4.0
-numpy>=1.26.0
+numpy>=1.26.0,<2.0.0
 
 # Model Download (choose based on your storage)
 huggingface_hub>=0.20.0
