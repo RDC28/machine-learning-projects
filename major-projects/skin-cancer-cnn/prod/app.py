@@ -13,18 +13,21 @@ from werkzeug.utils import secure_filename
 import numpy as np
 from PIL import Image
 
-# Try ONNX Runtime first (lightweight), fallback to TensorFlow if needed
+# Try ONNX Runtime (Preferred for Memory Efficiency)
 try:
     import onnxruntime as ort
     USE_ONNX = True
     print("Using ONNX Runtime for inference (lightweight)")
 except ImportError:
+    print("ONNX Runtime not installed. Using TensorFlow fallback (Heavy RAM usage!)")
     USE_ONNX = False
     try:
         import tensorflow as tf
         print("Using TensorFlow for inference")
     except ImportError:
-        raise ImportError("Please install either onnxruntime or tensorflow for inference")
+        # If neither is found, we can't predict
+        print("CRITICAL: Neither onnxruntime nor tensorflow is installed.")
+        raise ImportError("Please install onnxruntime (preferred) or tensorflow.")
 
 
 # ================================

@@ -14,8 +14,8 @@ huggingface_hub>=0.20.0
 gdown>=5.1.0
 requests>=2.31.0
 
-# Inference Engine - Using TensorFlow CPU for H5 model support
-tensorflow-cpu>=2.15.0
+# Inference Engine - Lightweight ONNX Runtime
+onnxruntime>=1.16.0
 
 # Production Server
 gunicorn>=21.2.0

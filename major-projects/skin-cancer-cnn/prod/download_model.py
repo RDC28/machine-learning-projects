@@ -10,7 +10,7 @@ import sys
 import hashlib
 
 MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'model')
-MODEL_PATH = os.path.join(MODEL_DIR, 'skin_cancer_model_best.h5')
+MODEL_PATH = os.path.join(MODEL_DIR, 'skin_cancer_model.onnx')
 
 # ========================================
 # CONFIGURATION - Choose ONE option below
@@ -20,7 +20,7 @@ MODEL_PATH = os.path.join(MODEL_DIR, 'skin_cancer_model_best.h5')
 # Upload your model to: https://huggingface.co/new
 # Then set: HF_REPO = "your-username/skin-cancer-model"
 HF_REPO = os.environ.get('HF_REPO', 'rdc28/skin-canc-classi')  # Default to your repo
-HF_FILENAME = "skin_cancer_model_best.h5"
+HF_FILENAME = "skin_cancer_model.onnx"
 
 # Option 2: Google Drive
 # Share file -> "Anyone with link" -> Copy file ID from URL
