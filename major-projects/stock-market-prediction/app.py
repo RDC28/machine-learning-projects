@@ -1,5 +1,6 @@
 import os
 import json
+import pandas as pd
 from datetime import datetime, timedelta, timezone
 
 from flask import Flask, jsonify, render_template, request
@@ -220,59 +221,97 @@ def add_log_entry(ticker, period, insights):
 
 
 def evaluate_pending_logs():
+    """
+    Finds all 'pending' logs where predicted_for_date <= today,
+    fetches actual close price, and updates status to 'evaluated'.
+    """
     logs = load_logs()
     today = get_today_ist().date()
-    changed = False
+    
+    pending_logs = [e for e in logs if e.get("status") == "pending"]
+    if not pending_logs:
+        return logs
 
-    for entry in logs:
-        if entry.get("status") != "pending":
-            continue
-
-        pred_date = datetime.strptime(entry["predicted_for_date"], "%Y-%m-%d").date()
-        if today <= pred_date:
-            continue  # too early to evaluate
-
-        # fetch recent data and find the first close on/after pred_date
+    # Filter logs that are actually ready for evaluation (predicted_for_date <= today)
+    ready_logs = []
+    for entry in pending_logs:
         try:
-            df = get_stock_data(entry["ticker"], period="7d", interval="1d")
-            df_dates = df["Date"].dt.date
-            mask = df_dates >= pred_date
-            df_sel = df[mask]
-            if df_sel.empty:
-                continue
-            actual_close = float(df_sel.iloc[0]["Close"])
-        except Exception as e:
-            print(f"Error fetching actual close for log {entry['id']}: {e}")
+            p_date_str = entry["predicted_for_date"]
+            # Flexible parsing if needed, but standard is YYYY-MM-DD
+            pred_date = datetime.strptime(p_date_str, "%Y-%m-%d").date()
+            if today >= pred_date:
+                ready_logs.append(entry)
+        except (ValueError, KeyError, TypeError):
             continue
+            
+    if not ready_logs:
+        return logs
 
-        entry["actual_close"] = actual_close
-        abs_error = abs(actual_close - entry["predicted_close"])
-        entry["abs_error"] = abs_error
-        entry["pct_error"] = abs_error / actual_close * 100.0 if actual_close != 0 else None
+    # Group by ticker to minimize yfinance calls
+    ticker_groups = {}
+    for entry in ready_logs:
+        t = entry["ticker"]
+        if t not in ticker_groups:
+            ticker_groups[t] = []
+        ticker_groups[t].append(entry)
 
-        # direction correctness
-        pred_dir = 0
-        actual_dir = 0
-        if entry["predicted_close"] > entry["last_close"]:
-            pred_dir = 1
-        elif entry["predicted_close"] < entry["last_close"]:
-            pred_dir = -1
+    changed = False
+    for ticker, group in ticker_groups.items():
+        try:
+            # Fetch data once per ticker
+            df = get_stock_data(ticker, period="1mo", interval="1d")
+            if df.empty:
+                continue
+            
+            # Reset index to ensure Date is a column if it isn't already
+            if isinstance(df.index, pd.DatetimeIndex):
+                df = df.reset_index()
 
-        if actual_close > entry["last_close"]:
-            actual_dir = 1
-        elif actual_close < entry["last_close"]:
-            actual_dir = -1
+            # Flatten columns if they are multi-index
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
 
-        entry["direction_correct"] = (pred_dir == actual_dir)
-        entry["status"] = "evaluated"
-        changed = True
+            # Ensure Date column exists
+            if "Date" not in df.columns:
+                 continue
+
+            # Convert Date to string for easy comparison
+            df["DateStr"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
+            
+            # Create a lookup dict: DateStr -> Close
+            price_map = dict(zip(df["DateStr"], df["Close"]))
+            
+            # Also get a sorted list of available dates for "closest future date" lookup
+            available_dates = sorted(price_map.keys())
+            
+            for entry in group:
+                pred_date_str = entry["predicted_for_date"]
+                
+                # Check if we have data for this date OR a later date
+                found_date = next((d for d in available_dates if d >= pred_date_str), None)
+                
+                if found_date:
+                    actual_close = float(price_map[found_date])
+                    
+                    entry["actual_close"] = actual_close
+                    abs_error = abs(actual_close - entry["predicted_close"])
+                    entry["abs_error"] = abs_error
+                    entry["pct_error"] = (abs_error / actual_close * 100.0) if actual_close != 0 else 0
+                    
+                    # Direction check
+                    pred_dir = 1 if entry["predicted_close"] > entry["last_close"] else (-1 if entry["predicted_close"] < entry["last_close"] else 0)
+                    actual_dir = 1 if actual_close > entry["last_close"] else (-1 if actual_close < entry["last_close"] else 0)
+                    
+                    entry["direction_correct"] = (pred_dir == actual_dir)
+                    entry["status"] = "evaluated"
+                    changed = True
+        except Exception as e:
+            print(f"Error evaluating {ticker}: {e}")
 
     if changed:
         save_logs(logs)
         recompute_logs_stats(logs)
-
-    # After updating logs & stats, clean up unused models
-    cleanup_models()
+        cleanup_models()
 
     return logs
 
@@ -282,6 +321,9 @@ def evaluate_pending_logs():
 
 @app.route("/")
 def home():
+    # Automatically update logs whenever home page is visited
+    evaluate_pending_logs()
+    
     stock_cards = load_cached_top_stocks()
     if not stock_cards:
         stock_cards = generate_and_cache_top_stocks()
