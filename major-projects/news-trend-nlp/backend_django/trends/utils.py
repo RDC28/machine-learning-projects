@@ -3,8 +3,6 @@ import json
 import os
 from datetime import datetime
 from .models import RunLog, TrendTopic
-from langchain_huggingface import HuggingFaceEndpoint
-from langchain_core.prompts import PromptTemplate
 from django.conf import settings
 
 # --- GDELT Fetcher ---
@@ -68,51 +66,50 @@ def get_topics_from_service(articles):
         print(f"Error calling Model Service: {e}")
         return []
 
-# --- Summarization (LangChain) ---
-def generate_headline(keywords):
+# --- Headline Generation (HuggingFace Inference API) ---
+def generate_headline(keywords, representative_texts=None):
     """
-    Uses HF Inference API to generate a short news headline.
+    Uses HuggingFace Inference API to generate a proper news headline.
+    Falls back to formatted keywords if API unavailable.
     """
     hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
     if not hf_token:
         print("WARNING: No HF Token found. Using fallback labels.")
         return ", ".join(keywords[:3]).title()
     
-    # Try using a widely widely available model, but gracefully fail to keywords if unavailable
-    api_url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
-    headers = {"Authorization": f"Bearer {hf_token}"}
-    
-    prompt = f"Make a short news headline about: {', '.join(keywords)}"
-    
-    payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_new_tokens": 25, 
-            "temperature": 0.6,
-            "do_sample": True
-        }
-    }
-
     try:
-        response = requests.post(api_url, headers=headers, json=payload, timeout=5)
+        from huggingface_hub import InferenceClient
         
-        # If API is standard 410 Gone or 404, just return keywords silently
-        if response.status_code in [404, 410, 503]:
-            # print(f"Model unavailable ({response.status_code}), falling back to keywords.")
-            return ", ".join(keywords[:3]).title()
-
-        response.raise_for_status()
+        # Use Qwen model - free, fast, and available on HF Inference API
+        client = InferenceClient(
+            model="Qwen/Qwen2.5-72B-Instruct",
+            token=hf_token
+        )
         
-        result = response.json()
-        if isinstance(result, list) and len(result) > 0:
-            headline = result[0].get('generated_text', '')
-            return headline.strip()
+        # Create a prompt for headline generation
+        topic_str = ", ".join(keywords[:5])
+        prompt = f"Generate a short, professional news headline (max 10 words) about: {topic_str}. Just the headline, nothing else."
+        
+        # Generate using chat completions API
+        result = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=30,
+            temperature=0.7
+        )
+        
+        # Extract the headline from response
+        if result and result.choices:
+            headline = result.choices[0].message.content.strip()
+            # Remove any quotes that might be in the output
+            headline = headline.strip('"\'')
+            if len(headline) > 5:
+                return headline
         
         return ", ".join(keywords[:3]).title()
         
-    except Exception:
-        # Silently fall back if anything goes wrong (timeouts, network, etc.)
-        # This prevents the red error text spam in the console
+    except Exception as e:
+        # Silent fallback - don't spam console with errors
+        # This handles rate limits, timeouts, and API issues gracefully
         return ", ".join(keywords[:3]).title()
 
 # --- Orchestrator ---
