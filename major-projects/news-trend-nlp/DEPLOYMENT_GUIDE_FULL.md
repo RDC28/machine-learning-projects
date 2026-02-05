@@ -57,7 +57,7 @@ This runs the Django logic and database.
     *   **Start Command**: `gunicorn config.wsgi:application`
     *   **Instance Type**: Free
 4.  **Environment Variables** (Scroll down to "Advanced"):
-    *   `PYTHON_VERSION`: `3.9.0`
+    *   `PYTHON_VERSION`: `3.11.0`
     *   `SECRET_KEY`: (Generate a random string)
     *   `DEBUG`: `False`
     *   `MODEL_SERVICE_URL`: Paste the **Vercel URL** from Step 2 (no trailing slash, e.g. `https://...vercel.app`).
