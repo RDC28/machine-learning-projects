@@ -1,0 +1,33 @@
+# --- Core & Utilities ---
+python-dotenv
+requests
+pandas
+numpy
+beautifulsoup4
+
+# --- Backend (Django) ---
+Django>=5.0
+djangorestframework
+django-cors-headers
+psycopg2-binary
+dj-database-url
+gunicorn
+whitenoise
+
+# --- Model Service (FastAPI) ---
+fastapi
+uvicorn[standard]
+# Lightweight ML for topic modeling (fits 512MB RAM better than Torch/Transformers)
+scikit-learn
+nltk
+
+# --- Frontend (Streamlit) ---
+streamlit
+plotly
+streamlit-lottie
+
+# --- LangChain & LLM ---
+langchain
+langchain-community
+# We will use Hugging Face Serverless Inference API (Free) to save local RAM
+langchain-huggingface

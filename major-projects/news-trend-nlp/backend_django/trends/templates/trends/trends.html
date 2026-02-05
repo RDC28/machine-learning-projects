@@ -1,0 +1,76 @@
+{% extends 'trends/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Latest Trends</h2>
+        <button id="refreshBtn" class="btn btn-primary" onclick="triggerRefresh()">
+            🔄 Analyze Fresh Data
+        </button>
+    </div>
+
+    <div id="loading" class="alert alert-info d-none">
+        Analysis in progress... This may take 10-20 seconds. Please wait.
+    </div>
+
+    <div id="trends-container" class="row">
+        <!-- Content injected via JS -->
+        <p class="text-muted">Loading trends...</p>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    async function loadTrends() {
+        const container = document.getElementById('trends-container');
+        try {
+            const response = await fetch('/api/latest/');
+            if (!response.ok) throw new Error("No data found");
+            const data = await response.json();
+
+            let html = '';
+            data.trends.forEach(trend => {
+                const keywords = JSON.parse(trend.keywords).slice(0, 5).join(', ');
+                html += `
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">${trend.label || 'Topic'} <span class="badge bg-secondary float-end">${trend.article_count} articles</span></h5>
+                            <p class="card-text fw-bold">"${trend.summary}"</p>
+                            <p class="card-text small text-muted">Keywords: ${keywords}</p>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = '<div class="col-12"><div class="alert alert-warning">No trends found. Click "Analyze Fresh Data" to start.</div></div>';
+        }
+    }
+
+    async function triggerRefresh() {
+        const btn = document.getElementById('refreshBtn');
+        const loading = document.getElementById('loading');
+        btn.disabled = true;
+        loading.classList.remove('d-none');
+
+        try {
+            const response = await fetch('/api/run/', { method: 'POST' });
+            if (response.ok) {
+                setTimeout(loadTrends, 1000); // Reload after short delay
+            } else {
+                alert("Analysis failed to start.");
+            }
+        } catch (e) {
+            alert("Error connecting to server.");
+        } finally {
+            btn.disabled = false;
+            loading.classList.add('d-none');
+        }
+    }
+
+    // Load on start
+    loadTrends();
+</script>
+{% endblock %}
+{% endblock %}

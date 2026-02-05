@@ -1,0 +1,34 @@
+{% extends 'trends/base.html' %}
+
+{% block content %}
+<div class="hero text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Discover What the World is Talking About</h1>
+        <p class="lead mb-4">Real-time topic modeling on global news streams using AI.</p>
+        <a href="{% url 'trends' %}" class="btn btn-light btn-lg px-5">Explore Trends Now</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="p-4">
+                <h3>📡 Live GDELT Data</h3>
+                <p>We fetch the latest news metadata from the GDELT Project every hour.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <h3>🧠 AI Analysis</h3>
+                <p>Our ML pipeline clusters articles into coherent topics automatically.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <h3>📝 Smart Summaries</h3>
+                <p>Get instant 1-sentence summaries of complex global events.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

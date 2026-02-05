@@ -1,0 +1,20 @@
+{% extends 'trends/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>About Project</h2>
+    <p>This project demonstrates a full-stack NLP pipeline deployed on Render's Free Tier.</p>
+
+    <h4>Tech Stack</h4>
+    <ul>
+        <li><strong>Django</strong>: Backend & API</li>
+        <li><strong>FastAPI</strong>: Topic Modeling Service (Scikit-Learn NMF)</li>
+        <li><strong>GDELT Project</strong>: Source of global news data</li>
+        <li><strong>LangChain</strong>: Summarization via HuggingFace Inference API</li>
+    </ul>
+
+    <h4>Architecture</h4>
+    <p>We use a microservice architecture to separate the heavy ML processing (FastAPI) from the web application
+        (Django). This ensures better resource management within limited container memory.</p>
+</div>
+{% endblock %}
