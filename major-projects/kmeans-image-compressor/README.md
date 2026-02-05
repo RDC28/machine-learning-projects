@@ -69,7 +69,7 @@ All decisions are **mathematical and unsupervised** — no labels, no pretrained
 
 ```
 .
-├── app.py                     # Flask application & routes
+├── app.py                     # Flask application & routes (in-memory image handling)
 ├── modules/
 │   └── image_compression.py   # Core unsupervised compression logic
 │
@@ -80,10 +80,7 @@ All decisions are **mathematical and unsupervised** — no labels, no pretrained
 │   └── about.html             # Algorithm & theory explanation
 │
 ├── static/
-│   ├── demo/                  # Example compressed images
-│   └── outputs/               # Overwritten compressed output
-│
-├── uploads/                   # Overwritten input image
+│   └── demo/                  # Example compressed images
 └── README.md
 ```
 

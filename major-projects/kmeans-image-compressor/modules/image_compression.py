@@ -59,8 +59,8 @@ def decide_params(img_np, manual_k=None):
 # Main fast compression function
 # -------------------------------------------------
 def compress_image(
-    input_path,
-    output_path,
+    input_file,
+    output_file,
     k=16,
     auto_k=False,
     max_iter=50,
@@ -78,7 +78,7 @@ def compress_image(
     # -----------------------------
     # Load image
     # -----------------------------
-    img = Image.open(input_path).convert("RGB")
+    img = Image.open(input_file).convert("RGB")
     img_np = np.array(img)
     H, W = img_np.shape[:2]
 
@@ -146,11 +146,16 @@ def compress_image(
     # -----------------------------
     # Encode
     # -----------------------------
-    ext = output_path.rsplit(".", 1)[1].lower()
+    # Determine extension/format from output_file if it's a path
+    if isinstance(output_file, str):
+        ext = output_file.rsplit(".", 1)[1].lower()
+    else:
+        # Default to jpg if it's a buffer, unless we can infer it
+        ext = "jpg"
 
     if ext in ("jpg", "jpeg"):
         recon_img.save(
-            output_path,
+            output_file,
             format="JPEG",
             quality=jpeg_quality,
             optimize=True,
@@ -162,13 +167,24 @@ def compress_image(
             palette=Image.ADAPTIVE,
             colors=selected_k
         )
-        recon_img.save(output_path, optimize=True)
+        recon_img.save(output_file, format="PNG", optimize=True)
 
     # -----------------------------
     # Metadata
     # -----------------------------
-    original_size = os.path.getsize(input_path)
-    compressed_size = os.path.getsize(output_path)
+    if hasattr(input_file, 'seek'):
+        input_file.seek(0, os.SEEK_END)
+        original_size = input_file.tell()
+        input_file.seek(0)
+    else:
+        original_size = os.path.getsize(input_file)
+
+    if hasattr(output_file, 'seek'):
+        output_file.seek(0, os.SEEK_END)
+        compressed_size = output_file.tell()
+        output_file.seek(0)
+    else:
+        compressed_size = os.path.getsize(output_file)
 
     return {
         "k_used": selected_k,
@@ -179,7 +195,7 @@ def compress_image(
         "original_size_kb": round(original_size / 1024, 2),
         "compressed_size_kb": round(compressed_size / 1024, 2),
         "reduction_percent": round(
-            (1 - compressed_size / original_size) * 100, 2
+            (1 - compressed_size / max(original_size, 1)) * 100, 2
         ),
         "encoder": "JPEG (lossy)" if ext in ("jpg", "jpeg") else "PNG (palette)"
     }

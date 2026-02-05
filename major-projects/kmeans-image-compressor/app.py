@@ -1,4 +1,6 @@
 import os
+import io
+import base64
 from flask import Flask, render_template, request
 from modules.image_compression import compress_image
 
@@ -7,12 +9,7 @@ app = Flask(__name__)
 # -----------------------------
 # Config
 # -----------------------------
-UPLOAD_DIR = "uploads"
-OUTPUT_DIR = "static/outputs"
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
-
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 # -----------------------------
@@ -44,25 +41,36 @@ def compress():
             return "Invalid file format", 400
 
         ext = file.filename.rsplit(".", 1)[1].lower()
+        
+        # Read input into memory
+        input_buffer = io.BytesIO()
+        file.save(input_buffer)
+        input_buffer.seek(0)
 
-        input_path = os.path.join(UPLOAD_DIR, f"input.{ext}")
-        output_path = os.path.join(OUTPUT_DIR, f"output.{ext}")
+        # Prepare output buffer
+        output_buffer = io.BytesIO()
 
-        # Overwrite input image
-        file.save(input_path)
-
-        # Run intelligent compression
+        # Run intelligent compression (using buffers instead of paths)
         stats = compress_image(
-            input_path=input_path,
-            output_path=output_path,
+            input_file=input_buffer,
+            output_file=output_buffer,
             k=k,
             auto_k=auto_k
         )
 
+        # Convert output to base64 for display
+        output_buffer.seek(0)
+        base64_data = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+        
+        # Determine MIME type
+        mime_type = "image/jpeg" if ext in ("jpg", "jpeg") else "image/png"
+        output_image_data = f"data:{mime_type};base64,{base64_data}"
+
         return render_template(
             "compress.html",
             active="compress",
-            output_image=f"outputs/output.{ext}",
+            output_image=output_image_data,
+            ext=ext,
             stats=stats,
             k=stats["k_used"],
             auto_k=auto_k
