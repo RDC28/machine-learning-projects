@@ -71,11 +71,28 @@ def render_status_monitor():
     md_status, md_msg = check_service_status(MODEL_SERVICE_URL, "Model")
 
     # Render Pills
-    dj_color = "green" if dj_status else "red"
-    md_color = "green" if md_status else "red"
+    dj_color = "#00C853" if dj_status else "#FF1744"
+    md_color = "#00C853" if md_status else "#FF1744"
     
-    col1.markdown(f"**Backend**\\n:{dj_color}_circle: {dj_msg if dj_status else 'DOWN'}")
-    col2.markdown(f"**Model**\\n:{md_color}_circle: {md_msg if md_status else 'DOWN'}")
+    col1.markdown(f"""
+    <div style="background-color: #262730; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333;">
+        <div style="font-size: 0.7rem; color: #AAA; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Backend</div>
+        <div style="font-weight: bold; color: {dj_color}; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {dj_color}; box-shadow: 0 0 5px {dj_color};"></div>
+            {dj_msg if dj_status else 'DOWN'}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col2.markdown(f"""
+    <div style="background-color: #262730; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333;">
+        <div style="font-size: 0.7rem; color: #AAA; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Model</div>
+        <div style="font-weight: bold; color: {md_color}; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {md_color}; box-shadow: 0 0 5px {md_color};"></div>
+            {md_msg if md_status else 'DOWN'}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     if not dj_status or not md_status:
         # Show waking up screen blocking the main UI
