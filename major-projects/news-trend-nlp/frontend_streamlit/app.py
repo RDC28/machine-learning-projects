@@ -28,12 +28,125 @@ except FileNotFoundError:
     pass
 
 import os
+import time
 
 # --- Constants ---
 DJANGO_API_URL = os.environ.get("DJANGO_API_URL", "http://localhost:8000/api/latest/")
 TRIGGER_RUN_URL = os.environ.get("TRIGGER_RUN_URL", "http://localhost:8000/api/run/")
+# Try to derive base URL or use explicit env var for health check
+DJANGO_BASE_URL = os.environ.get("DJANGO_BASE_URL", DJANGO_API_URL.split("/api")[0])
+MODEL_SERVICE_URL = os.environ.get("MODEL_SERVICE_URL", "http://localhost:8001")
 
 # --- API Helper Functions ---
+def check_service_status(url, service_name, timeout=2):
+    """
+    Checks if a service is up. Returns (status_bool, message).
+    Using a short timeout to detect 'sleeping' services quickly.
+    """
+    try:
+        # Just head or get to root/health
+        response = requests.get(url, timeout=timeout)
+        if response.status_code in [200, 404, 403]: # 404/403 means server is responding
+            return True, "Online"
+        return False, f"Status: {response.status_code}"
+    except requests.exceptions.Timeout:
+        return False, "Sleeping"
+    except requests.exceptions.ConnectionError:
+        return False, "Connection Error"
+    except Exception as e:
+        return False, str(e)
+
+def render_status_monitor():
+    """
+    Displays status pills in sidebar and handles auto-wake mechanism.
+    This should be called at the very start of the app layout.
+    """
+    st.sidebar.markdown("### SYSTEM STATUS")
+    col1, col2 = st.sidebar.columns(2)
+    
+    # Check services
+    # We use a placeholder for the wake-up screen logic
+    
+    dj_status, dj_msg = check_service_status(DJANGO_BASE_URL, "Backend")
+    md_status, md_msg = check_service_status(MODEL_SERVICE_URL, "Model")
+
+    # Render Pills
+    dj_color = "green" if dj_status else "red"
+    md_color = "green" if md_status else "red"
+    
+    col1.markdown(f"**Backend**\\n:{dj_color}_circle: {dj_msg if dj_status else 'DOWN'}")
+    col2.markdown(f"**Model**\\n:{md_color}_circle: {md_msg if md_status else 'DOWN'}")
+    
+    if not dj_status or not md_status:
+        # Show waking up screen blocking the main UI
+        placeholder = st.empty()
+        with placeholder.container():
+            st.markdown("""
+            <style>
+            .stApp {opacity: 0.2;}
+            .wake-up-modal {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #1E2129;
+                padding: 40px;
+                border-radius: 15px;
+                border: 2px solid #FF0080;
+                text-align: center;
+                z-index: 999999;
+                box-shadow: 0 0 50px rgba(255, 0, 128, 0.5);
+                width: 50%;
+                max-width: 600px;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <div class="wake-up-modal">
+                <h2 style="color: #FFF;">⚠️ WAKING UP SERVERS</h2>
+                <p style="color: #DDD; font-size: 1.1rem;">
+                    The free-tier Render instances are currently sleeping.<br>
+                    Sending wake-up signals now...
+                </p>
+                <div style="margin: 20px 0;">
+                    <p style="text-align: left; margin-left: 20%;">
+                        <strong>Backend:</strong> {'✅ READY' if dj_status else '⏳ WAKING UP...'}<br>
+                        <strong>Model Service:</strong> {'✅ READY' if md_status else '⏳ WAKING UP...'}
+                    </p>
+                </div>
+                <p style="color: #888; font-size: 0.9rem;">This process typically takes 30-60 seconds.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Wake up loop
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            start_time = time.time()
+            max_wait = 90
+            
+            while time.time() - start_time < max_wait:
+                elapsed = time.time() - start_time
+                progress_bar.progress(min(elapsed / 60, 1.0))
+                status_text.text(f"Waiting for services... ({int(elapsed)}s)")
+                
+                dj_status, _ = check_service_status(DJANGO_BASE_URL, "Backend")
+                md_status, _ = check_service_status(MODEL_SERVICE_URL, "Model")
+                
+                if dj_status and md_status:
+                    st.success("Services are Online! Refreshing...")
+                    time.sleep(1)
+                    st.rerun()
+                
+                time.sleep(3)
+            
+            st.error("Services failed to wake up. Please check Render dashboard manually.")
+            st.stop()
+            
+    st.sidebar.markdown("---")
+
+
 @st.cache_data(ttl=600, show_spinner=False)
 def fetch_trends():
     try:
@@ -230,6 +343,10 @@ def page_about():
 def main():
     if 'page' not in st.session_state:
         st.session_state.page = "Home"
+
+    # Status Monitor
+    render_status_monitor()
+
 
     # Sidebar Nav
     with st.sidebar:
