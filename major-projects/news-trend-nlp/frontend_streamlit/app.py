@@ -35,10 +35,10 @@ DJANGO_API_URL = os.environ.get("DJANGO_API_URL", "http://localhost:8000/api/lat
 TRIGGER_RUN_URL = os.environ.get("TRIGGER_RUN_URL", "http://localhost:8000/api/run/")
 # Try to derive base URL or use explicit env var for health check
 DJANGO_BASE_URL = os.environ.get("DJANGO_BASE_URL", DJANGO_API_URL.split("/api")[0])
-MODEL_SERVICE_URL = os.environ.get("MODEL_SERVICE_URL", "http://localhost:8001")
+MODEL_SERVICE_URL = os.environ.get("MODEL_SERVICE_URL", "http://127.0.0.1:8001")
 
 # --- API Helper Functions ---
-def check_service_status(url, service_name, timeout=2):
+def check_service_status(url, service_name, timeout=5):
     """
     Checks if a service is up. Returns (status_bool, message).
     Using a short timeout to detect 'sleeping' services quickly.
@@ -48,13 +48,13 @@ def check_service_status(url, service_name, timeout=2):
         response = requests.get(url, timeout=timeout)
         if response.status_code in [200, 404, 403]: # 404/403 means server is responding
             return True, "Online"
-        return False, f"Status: {response.status_code}"
+        return False, f"Err: {response.status_code}"
     except requests.exceptions.Timeout:
-        return False, "Sleeping"
+        return False, "Timeout"
     except requests.exceptions.ConnectionError:
-        return False, "Connection Error"
+        return False, "Conn Error"
     except Exception as e:
-        return False, str(e)
+        return False, "Error"
 
 def render_status_monitor():
     """
@@ -77,9 +77,9 @@ def render_status_monitor():
     col1.markdown(f"""
     <div style="background-color: #262730; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333;">
         <div style="font-size: 0.7rem; color: #AAA; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Backend</div>
-        <div style="font-weight: bold; color: {dj_color}; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <div style="font-weight: bold; color: {dj_color}; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
             <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {dj_color}; box-shadow: 0 0 5px {dj_color};"></div>
-            {dj_msg if dj_status else 'DOWN'}
+            {dj_msg}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -87,9 +87,9 @@ def render_status_monitor():
     col2.markdown(f"""
     <div style="background-color: #262730; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333;">
         <div style="font-size: 0.7rem; color: #AAA; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Model</div>
-        <div style="font-weight: bold; color: {md_color}; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <div style="font-weight: bold; color: {md_color}; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
             <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {md_color}; box-shadow: 0 0 5px {md_color};"></div>
-            {md_msg if md_status else 'DOWN'}
+            {md_msg}
         </div>
     </div>
     """, unsafe_allow_html=True)
