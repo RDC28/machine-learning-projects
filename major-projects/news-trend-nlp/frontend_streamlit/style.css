@@ -1,0 +1,82 @@
+/* Main App Background */
+.stApp {
+    background-color: #0E1117;
+    color: #FAFAFA;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #161920;
+    border-right: 1px solid #333;
+}
+
+/* Buttons */
+.stButton > button {
+    width: 100%;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid #333;
+    background-color: #1E2129;
+    color: #FFF;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    border-color: #FF0080;
+    color: #FF0080;
+    background-color: rgba(255, 0, 128, 0.1);
+}
+
+/* Metrics */
+[data-testid="stMetricValue"] {
+    color: #FF66B2;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #AAA;
+}
+
+/* Headers */
+h1, h2, h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700 !important;
+}
+
+h1 {
+    background: linear-gradient(90deg, #FFF 0%, #AAA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar for Chrome/Safari */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #161920; 
+}
+::-webkit-scrollbar-thumb {
+    background: #333; 
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #FF0080; 
+}
+
+/* Expander */
+.streamlit-expanderHeader {
+    background-color: #1E2129;
+    border-radius: 8px;
+    border: 1px solid #333;
+    color: #FFF;
+}
+
+/* Links */
+a {
+    color: #FF66B2 !important;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
