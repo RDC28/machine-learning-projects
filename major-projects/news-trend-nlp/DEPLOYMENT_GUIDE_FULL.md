@@ -1,27 +1,18 @@
 # 🚀 Deployment Guide: News Trend NLP
 
-This guide outlines how to deploy your **News Trend NLP** project using a hybrid approach to maximize free tier benefits:
-1.  **Model Service (FastAPI)** -> **Vercel** (Serverless, fast, free).
-2.  **Backend API (Django)** -> **Render** (Free Web Service).
-3.  **Frontend (Streamlit)** -> **Streamlit Cloud** (Best for Streamlit) OR **Render** (Alternative).
+This guide outlines how to deploy your **News Trend NLP** project.
+All services (Backend, Model Service, and Frontend) will be hosted in the cloud.
 
 ---
 
 ## ✅ Step 1: Prepare GitHub Repository
-Since you haven't set up the repo, follow these steps in your terminal (inside the project folder):
+(Already done if you are reading this on GitHub)
 
 ```bash
-# 1. Initialize Git
 git init
-
-# 2. Add all files
 git add .
-
-# 3. Create initial commit
-git commit -m "Initial commit for deployment"
-
-# 4. Create a repository on GitHub.com (e.g., 'news-trend-nlp')
-# 5. Connect and push (replace YOUR_USERNAME)
+git commit -m "Initial commit"
+# Connect to your repo
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/news-trend-nlp.git
 git push -u origin main
@@ -29,17 +20,20 @@ git push -u origin main
 
 ---
 
-## 🚀 Step 2: Deploy Model Service (on Vercel)
+## 🚀 Step 2: Deploy Model Service (on Render)
 This service runs the Topic Modeling (NMF).
 
-1.  Go to [Vercel.com](https://vercel.com) and **Add New Project**.
-2.  Import your `news-trend-nlp` repository.
-3.  **Critical Configuration**:
-    *   **Framework Preset**: Select "Other" (or let it detect).
-    *   **Root Directory**: Click "Edit" and select `model_service`.
-4.  **Click Deploy**.
-5.  Wait for deployment. specific URL will be generated (e.g., `https://news-trend-model-xyz.vercel.app`).
-6.  **Copy this URL**. You will need it for the Backend.
+1.  Go to [Render.com](https://render.com) and click **New +** -> **Web Service**.
+2.  Connect your `news-trend-nlp` repository.
+3.  **Configuration**:
+    *   **Name**: `news-trend-model`
+    *   **Root Directory**: `model_service`
+    *   **Environment**: `Python 3`
+    *   **Build Command**: `pip install -r requirements.txt`
+    *   **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
+    *   **Instance Type**: Free
+4.  **Click Create Web Service**.
+5.  **Copy the URL** (e.g., `https://news-trend-model.onrender.com`).
 
 ---
 
@@ -50,23 +44,19 @@ This runs the Django logic and database.
 2.  Connect your GitHub repo.
 3.  **Configuration**:
     *   **Name**: `news-trend-backend`
-    *   **Root Directory**: `backend_django` (Important!)
+    *   **Root Directory**: `backend_django`
     *   **Environment**: `Python 3`
-    *   **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
-        *   *(Note: Migration command `python manage.py migrate` is also good to add, e.g., create a `build.sh` script, but for now manual migration or including it in build command works)*.
+    *   **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
     *   **Start Command**: `gunicorn config.wsgi:application`
     *   **Instance Type**: Free
-4.  **Environment Variables** (Scroll down to "Advanced"):
+4.  **Environment Variables**:
     *   `PYTHON_VERSION`: `3.11.0`
     *   `SECRET_KEY`: (Generate a random string)
     *   `DEBUG`: `False`
-    *   `MODEL_SERVICE_URL`: Paste the **Vercel URL** from Step 2 (no trailing slash, e.g. `https://...vercel.app`).
-    *   `HUGGINGFACEHUB_API_TOKEN`: (Your HF Token from .env)
+    *   `MODEL_SERVICE_URL`: Paste the **Model Service URL** from Step 2 (e.g. `https://news-trend-model.onrender.com`).
+    *   `HUGGINGFACEHUB_API_TOKEN`: (Your HF Token)
 5.  **Click Create Web Service**.
-6.  Wait for it to go live. Content might be empty initially.
-7.  **Copy the Render Service URL** (e.g., `https://news-trend-backend.onrender.com`).
-
-*Note on Database*: By default, this uses SQLite which resets every time the app restarts (approx 15 mins of inactivity). For a permanent DB, add a **PostgreSQL** instance on Render and copy the `INTERNAL_DATABASE_URL` to a `DATABASE_URL` env var in this service.
+6.  **Copy the URL** (e.g., `https://news-trend-backend.onrender.com`).
 
 ---
 
@@ -77,24 +67,27 @@ Streamlit apps work best on their native cloud.
 2.  Click **New App**.
 3.  Select Repository `news-trend-nlp`.
 4.  **Main file path**: `frontend_streamlit/app.py`.
-5.  **Advanced Settings -> Secrets** (Env vars):
-    Add the following TOML:
+5.  **🚨 CRITICAL STEP: Configure Secrets**
+    Go to **App Settings** -> **Secrets** and add:
+
     ```toml
-    DJANGO_API_URL = "https://YOUR-RENDER-BACKEND-URL.onrender.com/api/latest/"
-    TRIGGER_RUN_URL = "https://YOUR-RENDER-BACKEND-URL.onrender.com/api/run/"
+    DJANGO_API_URL = "https://news-trend-backend.onrender.com/api/latest/"
+    TRIGGER_RUN_URL = "https://news-trend-backend.onrender.com/api/run/"
+    DJANGO_BASE_URL = "https://news-trend-backend.onrender.com"
+    MODEL_SERVICE_URL = "https://news-trend-model.onrender.com"
     ```
-    *(Replace with your actual Render URL from Step 3)*.
-6.  **Click Deploy**.
+    *(Replace with your actual URLs if they differ)*.
+
+6.  **Click Save / Deploy**.
 
 ---
 
 ## 🎉 Done!
 Your app is fully distributed:
-*   **Calculations**: Vercel (Serverless)
+*   **Calculations**: Render (Web Service)
 *   **Logic/API**: Render (Web Service)
 *   **UI**: Streamlit Cloud
 
 ### Troubleshooting
-*   **500 Errors**: Check the Render logs.
-*   **Model Service Error**: Check Vercel logs/Function logs.
-*   **CORS**: We enabled `CORS_ALLOW_ALL_ORIGINS = True` in settings, so cross-domain requests should work fine.
+*   **"Conn Error" or Red Pills**: This means Streamlit cannot reach your services. Ensure the **Secrets** in Step 4 are 100% correct and the services on Render are not sleeping (the app will try to wake them up automatically).
+

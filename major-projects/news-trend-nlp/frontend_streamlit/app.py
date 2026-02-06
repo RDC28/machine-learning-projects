@@ -38,10 +38,9 @@ DJANGO_BASE_URL = os.environ.get("DJANGO_BASE_URL", DJANGO_API_URL.split("/api")
 MODEL_SERVICE_URL = os.environ.get("MODEL_SERVICE_URL", "http://127.0.0.1:8001")
 
 # --- API Helper Functions ---
-def check_service_status(url, service_name, timeout=5):
+def check_service_status(url, service_name, timeout=3):
     """
     Checks if a service is up. Returns (status_bool, message).
-    Using a short timeout to detect 'sleeping' services quickly.
     """
     try:
         # Just head or get to root/health
@@ -61,12 +60,13 @@ def render_status_monitor():
     Displays status pills in sidebar and handles auto-wake mechanism.
     This should be called at the very start of the app layout.
     """
+    if 'force_load' not in st.session_state:
+        st.session_state.force_load = False
+
     st.sidebar.markdown("### SYSTEM STATUS")
     col1, col2 = st.sidebar.columns(2)
     
     # Check services
-    # We use a placeholder for the wake-up screen logic
-    
     dj_status, dj_msg = check_service_status(DJANGO_BASE_URL, "Backend")
     md_status, md_msg = check_service_status(MODEL_SERVICE_URL, "Model")
 
@@ -94,6 +94,11 @@ def render_status_monitor():
     </div>
     """, unsafe_allow_html=True)
     
+    # If forced load is enabled, skip the blocking modal
+    if st.session_state.force_load:
+        st.sidebar.warning("⚠️ Forced Load Active")
+        return
+
     if not dj_status or not md_status:
         # Show waking up screen blocking the main UI
         placeholder = st.empty()
@@ -133,9 +138,18 @@ def render_status_monitor():
                     </p>
                 </div>
                 <p style="color: #888; font-size: 0.9rem;">This process typically takes 30-60 seconds.</p>
+                <p style="color: #FF5555; font-size: 0.8rem;">If "Conn Error" persists, check Secrets configuration.</p>
             </div>
             """, unsafe_allow_html=True)
             
+            # Button to bypass
+            # We use columns to center it roughly or just place underneath
+            c1, c2, c3 = st.columns([1,2,1])
+            with c2:
+                if st.button("BYPASS & LOAD ANYWAY"):
+                    st.session_state.force_load = True
+                    st.rerun()
+
             # Wake up loop
             progress_bar = st.progress(0)
             status_text = st.empty()
@@ -158,7 +172,10 @@ def render_status_monitor():
                 
                 time.sleep(3)
             
-            st.error("Services failed to wake up. Please check Render dashboard manually.")
+            # If we timeout, we allow the user to stay or retry
+            st.error("Services failed to wake up automatically.")
+            if st.button("RETRY WAKE UP"):
+                st.rerun()
             st.stop()
             
     st.sidebar.markdown("---")
