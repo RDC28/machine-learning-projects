@@ -11,20 +11,22 @@
 }
 
 /* Buttons */
-.stButton > button {
+/* Buttons */
+.stButton>button {
     width: 100%;
     border-radius: 8px;
     font-weight: 600;
-    border: 1px solid #333;
-    background-color: #1E2129;
-    color: #FFF;
+    border: 1px solid #FF0080;
+    background-color: rgba(255, 0, 128, 0.05);
+    color: #FF0080;
     transition: all 0.3s ease;
 }
 
-.stButton > button:hover {
+.stButton>button:hover {
     border-color: #FF0080;
-    color: #FF0080;
-    background-color: rgba(255, 0, 128, 0.1);
+    color: #FFF;
+    background-color: #FF0080;
+    box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
 }
 
 /* Metrics */
@@ -37,7 +39,9 @@
 }
 
 /* Headers */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     font-family: 'Outfit', sans-serif;
     font-weight: 700 !important;
 }
@@ -53,15 +57,18 @@ h1 {
     width: 10px;
     height: 10px;
 }
+
 ::-webkit-scrollbar-track {
-    background: #161920; 
+    background: #161920;
 }
+
 ::-webkit-scrollbar-thumb {
-    background: #333; 
+    background: #333;
     border-radius: 5px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-    background: #FF0080; 
+    background: #FF0080;
 }
 
 /* Expander */
@@ -77,6 +84,7 @@ a {
     color: #FF66B2 !important;
     text-decoration: none;
 }
+
 a:hover {
     text-decoration: underline;
 }
