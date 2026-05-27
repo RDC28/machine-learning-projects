@@ -132,13 +132,27 @@ def load_logs():
 
 
 def save_logs(logs):
+    """
+    Atomically save logs to disk.
+    Writes to a .tmp file first, then uses os.replace() to swap it in —
+    so either the full new file lands or the original is untouched.
+    Raises on failure so callers know the save did not persist.
+    """
     os.makedirs(JSON_DIR, exist_ok=True)
     payload = {"logs": logs}
+    tmp_path = LOGS_PATH + ".tmp"
     try:
-        with open(LOGS_PATH, "w", encoding="utf-8") as f:
+        with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2)
+        os.replace(tmp_path, LOGS_PATH)
     except Exception as e:
-        print(f"Error saving logs: {e}")
+        # Clean up the incomplete temp file if it was created
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+        raise  # Re-raise so callers know the save failed
 
 
 def recompute_logs_stats(logs):
@@ -215,7 +229,10 @@ def add_log_entry(ticker, period, insights):
     logs.append(entry)
     # keep only last 100
     logs = logs[-100:]
-    save_logs(logs)
+    try:
+        save_logs(logs)
+    except Exception as e:
+        print(f"[ERROR] Failed to save new log entry: {e}")
     recompute_logs_stats(logs)
     return entry
 
@@ -255,14 +272,41 @@ def evaluate_pending_logs():
             ticker_groups[t] = []
         ticker_groups[t].append(entry)
 
+    def _required_period(oldest_date_str: str) -> str:
+        """
+        Return a yfinance period string wide enough to include oldest_date_str.
+        Adds a 5-day buffer so the target date is never right on the edge.
+        """
+        try:
+            oldest = datetime.strptime(oldest_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return "1mo"
+        days_old = (today - oldest).days + 5  # +5 day buffer
+        if days_old <= 30:
+            return "1mo"
+        elif days_old <= 90:
+            return "3mo"
+        elif days_old <= 180:
+            return "6mo"
+        elif days_old <= 365:
+            return "1y"
+        elif days_old <= 730:
+            return "2y"
+        else:
+            return "5y"
+
     changed = False
     for ticker, group in ticker_groups.items():
         try:
-            # Fetch data once per ticker
-            df = get_stock_data(ticker, period="1mo", interval="1d")
+            # Pick a fetch window wide enough to cover the oldest pending entry
+            oldest_pred_date = min(e["predicted_for_date"] for e in group)
+            fetch_period = _required_period(oldest_pred_date)
+
+            # Fetch data once per ticker with the correct window
+            df = get_stock_data(ticker, period=fetch_period, interval="1d")
             if df.empty:
                 continue
-            
+
             # Reset index to ensure Date is a column if it isn't already
             if isinstance(df.index, pd.DatetimeIndex):
                 df = df.reset_index()
@@ -273,35 +317,35 @@ def evaluate_pending_logs():
 
             # Ensure Date column exists
             if "Date" not in df.columns:
-                 continue
+                continue
 
             # Convert Date to string for easy comparison
             df["DateStr"] = pd.to_datetime(df["Date"]).dt.strftime("%Y-%m-%d")
-            
+
             # Create a lookup dict: DateStr -> Close
             price_map = dict(zip(df["DateStr"], df["Close"]))
-            
-            # Also get a sorted list of available dates for "closest future date" lookup
+
+            # Sorted list of available dates for "closest trading day" lookup
             available_dates = sorted(price_map.keys())
-            
+
             for entry in group:
                 pred_date_str = entry["predicted_for_date"]
-                
-                # Check if we have data for this date OR a later date
+
+                # Find the exact predicted date or the next available trading day
                 found_date = next((d for d in available_dates if d >= pred_date_str), None)
-                
+
                 if found_date:
                     actual_close = float(price_map[found_date])
-                    
+
                     entry["actual_close"] = actual_close
                     abs_error = abs(actual_close - entry["predicted_close"])
                     entry["abs_error"] = abs_error
                     entry["pct_error"] = (abs_error / actual_close * 100.0) if actual_close != 0 else 0
-                    
+
                     # Direction check
                     pred_dir = 1 if entry["predicted_close"] > entry["last_close"] else (-1 if entry["predicted_close"] < entry["last_close"] else 0)
                     actual_dir = 1 if actual_close > entry["last_close"] else (-1 if actual_close < entry["last_close"] else 0)
-                    
+
                     entry["direction_correct"] = (pred_dir == actual_dir)
                     entry["status"] = "evaluated"
                     changed = True
@@ -309,9 +353,12 @@ def evaluate_pending_logs():
             print(f"Error evaluating {ticker}: {e}")
 
     if changed:
-        save_logs(logs)
-        recompute_logs_stats(logs)
-        cleanup_models()
+        try:
+            save_logs(logs)
+            recompute_logs_stats(logs)
+            cleanup_models()
+        except Exception as e:
+            print(f"[ERROR] Failed to persist evaluation results to disk: {e}")
 
     return logs
 
